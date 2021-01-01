@@ -1,2 +1,2 @@
-# TransGenderDiscriminationVisualization
+# TransgenderDiscriminationVisualization
 D3 based scroller visualization
