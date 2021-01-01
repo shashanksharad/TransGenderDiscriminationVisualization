@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html  >
+<head>
+  <!-- Site made with Mobirise Website Builder v5.2.0, https://mobirise.com -->
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Mobirise v5.2.0, mobirise.com">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+  <link rel="shortcut icon" href="assets/images/logo.png" type="image/x-icon">
+  <meta name="description" content="">
+  
+  
+  <title>Home</title>
+  <link rel="stylesheet" href="assets/tether/tether.min.css">
+  <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/bootstrap/css/bootstrap-grid.min.css">
+  <link rel="stylesheet" href="assets/bootstrap/css/bootstrap-reboot.min.css">
+  <link rel="stylesheet" href="assets/dropdown/css/style.css">
+  <link rel="stylesheet" href="assets/socicon/css/styles.css">
+  <link rel="stylesheet" href="assets/theme/css/style.css">
+  <link rel="preload" as="style" href="assets/mobirise/css/mbr-additional.css"><link rel="stylesheet" href="assets/mobirise/css/mbr-additional.css" type="text/css">
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+  <link rel="stylesheet" type="text/css" href="css/style.css"/>
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/bubble_chart.css">
+ 
+  <!-- <script src="http://d3js.org/d3.v4.js"></script> -->
+  <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+  <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+  <script src="js/tooltip.js"></script>
+
+  
+  <!-- <script src='https://d3js.org/d3.v5.min.js'></script> -->
+  
+
+  <style>
+
+body {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+    .names {
+    fill: none;
+    stroke: #fff;
+    stroke-linejoin: round;
+    }
+  
+      /* Tooltip CSS */
+      .d3-tip {
+      line-height: 1.5;
+      font-weight: 400;
+      font-family:"avenir next", Arial, sans-serif;
+      padding: 6px;
+      background: rgba(0, 0, 0, 0.6);
+      color: #FFA500;
+      border-radius: 1px;
+      pointer-events: none;
+      z-index: 999;
+      }
+  
+      /* Creates a small triangle extender for the tooltip */
+      .d3-tip:after {      
+        box-sizing: border-box;
+        display: inline;
+        font-size: 8px;
+        width: 100%;
+        line-height: 1.5;
+        color: rgba(0, 0, 0, 0.6);
+        position: absolute;
+        pointer-events: none;
+        
+      }
+  
+      /* Northward tooltips */
+      .d3-tip.n:after {
+        content: "\25BC";
+        margin: -1px 0 0 0;
+        top: 100%;
+        left: 0;
+        text-align: center;
+      }
+  
+      /* Eastward tooltips */
+      .d3-tip.e:after {
+        content: "\25C0";
+        margin: -4px 0 0 0;
+        top: 50%;
+        left: -8px;
+      }
+  
+      /* Southward tooltips */
+      .d3-tip.s:after {
+        content: "\25B2";
+        margin: 0 0 1px 0;
+        top: -8px;
+        left: 0;
+        text-align: center;
+      }
+  
+      /* Westward tooltips */
+      .d3-tip.w:after {
+        content: "\25B6";
+        margin: -4px 0 0 -1px;
+        top: 50%;
+        left: 100%;
+      }
+  
+  /*    text{
+        pointer-events:none;
+      }*/
+  
+      .details{
+        color:white;
+      }
+  
+  </style>
+  
+  
+</head>
+<body>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/queue.v1.min.js"></script>
+    <script src="https://d3js.org/topojson.v1.min.js"></script>
+    <script src="js/d3-tip.js"></script>
+  
+  <section class="menu cid-s48OLK6784" once="menu" id="menu1-h">
+    
+    <nav class="navbar navbar-dropdown navbar-fixed-top navbar-expand-lg">
+        <div class="container-fluid">
+            <div class="navbar-brand">
+                
+                <span class="navbar-caption-wrap"><a class="navbar-caption text-black text-primary display-7" href="https://sharadshashank.herokuapp.com" target="_blank">Sharad Shashank</a></span>
+            </div>
+            
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav nav-dropdown nav-right" data-app-modern-menu="true"><li class="nav-item"><a class="nav-link link text-black display-4" href="https://mobirise.com">
+                            Menu Item 2</a></li></ul>
+                
+                
+            </div>
+        </div>
+    </nav>
+
+</section>
+
+<section class="header1 cid-s48MCQYojq mbr-parallax-background" id="header1-f">
+
+    
+
+    <div class="mbr-overlay" style="opacity: 0.2; background-color: rgb(250, 250, 250);"></div>
+
+    <div class="align-center container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-8">
+                <h1 class="mbr-section-title mbr-fonts-style mb-3 display-1"><strong>Transgender Inequality</strong></h1>
+                <h2 class="mbr-section-title mbr-fonts-style mb-3 display-5">A Data Visualization exercise to remind modern societies of the repercussions of transgender discrimination through history</h2>
+                <p class="mbr-text mbr-fonts-style display-7">Created by Sharad Shashank</p>
+                
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content6 cid-sjPve2qVWe" id="content6-l">
+    
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-12 col-lg-10">
+                <hr class="line">
+                <p class="mbr-text align-center mbr-fonts-style my-4 display-4" style="font-size:110%;">There's a gender in your brain and a gender in your body. For 99 percent of people, those things are in alignment. For transgender people, they're mismatched. That's all it is. It's not complicated, it's not a neurosis. It's a mix-up. It's a birth defect, like a cleft palate.<br>-Chaz Bono</p>
+                <hr class="line">
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content5 cid-sjPvfxeMfB" id="content5-m">
+    
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-12 col-lg-10">
+                
+                <h4 class="mbr-section-subtitle mbr-fonts-style mb-4 display-2">Prologue</h4>
+                <p class="mbr-text mbr-fonts-style display-7" style="font-size:130%;">
+                    This data visualization exercise about transgender discrimination is both saddening &amp; hopeful at the same time. Anybody reading this has my humble request to take a moment to think and realize that we belong to the same social setup that has historically been very unjust, discriminatory and often violent to the transgender community and thus all of us owe our contributions towards creating a better world for them to live.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="image3 cid-s48upRUlSD" id="image3-9">
+    
+
+    
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-10">
+                <div class="image-wrapper">
+                    <img src="assets/images/ppl-spectrum-1646x408.jpeg" alt="Mobirise">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content5 cid-sjUMe7Qowc" id="content5-n">
+    
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-12 col-lg-10">
+                
+                <h4 class="mbr-section-subtitle mbr-fonts-style mb-4 display-5" style="font-size:130%;">Transgender Discrimination</h4>
+                <p class="mbr-text mbr-fonts-style display-7" style="font-size:130%;">Transgender people have been neglected throughout the world for a long time. Except for few countries, there is no recognition of their rights and they are bound to live very miserable lives with widespread discrimination in social, political, economic and educational spheres. In Indian society where I come from, this sexual minority has predominantly been forced into begging or prostitution. As a kid I was taught to despise them and have prejudices without any scientific reason. They&nbsp;have faced social and economic alienation due to discrimination based on their gender identity or expression.&nbsp;<br>Lack of sufficient data on their discrimination has further hampered substantial improvement in transgender equality through government policies. Through this work, I've tried to compile &amp; visualize some transgender discrimination survey data and thus highlight the extent of wrongdoings that they have to go through just because of how nature wanted them to be born as.&nbsp;<br></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content5 cid-sjUMe7Qowc" id="content5-n">
+    <div class="container">
+        <div id='graphic'>
+          <div id='sections'>
+            <section class="step" style="height: 0%;">
+              <div class="title"></div>
+              
+            </section>
+            <section class="step">
+                <div class="title">How the World sees it</div>
+                From a survey of 23 countries, Spain ranks highest in support for Transgender rights while Russia ranks lowest. Hover on each country to get deeper insights about each of them.
+              </section>
+            <section class="step">
+              <div class="title">Filler Wordscece</div>
+              From a survey of 23 countries, Spain ranks highest in support for Transgender rights while Russia ranks lowest. Hover on each country to get deeper insights about each of them. 
+            </section>
+            <section class="step">
+              <div class="title">Dominant Issues</div>
+              Transgender people face severe discrimination in almost all spheres of social life, especially in Education, Employment, Healthcare & Civic Participation. Each sphere represents a type of discrimination that they faced where size represents percentage of transgender population affected.
+            </section>
+            <section class="step">
+              <div class="title">Poverty</div>
+              From a survey of 23 countries, Spain ranks highest in support for Transgender rights while Russia ranks lowest. Hover on each country to get deeper insights about each of them.
+              
+            </section>
+            <section class="step">
+              <div class="title">Um's, Ah's &amp; Uh's</div>
+              From a survey of 23 countries, Spain ranks highest in support for Transgender rights while Russia ranks lowest. Hover on each country to get deeper insights about each of them.
+              
+            </section>
+            <section class="step">
+              <div class="title">Fillers Over Time</div>
+              From a survey of 23 countries, Spain ranks highest in support for Transgender rights while Russia ranks lowest. Hover on each country to get deeper insights about each of them.
+              </section>
+            <section class="step">
+              <div class="title">Ramping Back Up</div>
+              From a survey of 23 countries, Spain ranks highest in support for Transgender rights while Russia ranks lowest. Hover on each country to get deeper insights about each of them.
+              </section>
+            <section class="step">
+              <div class="title">The Cough Effect</div>
+              From a survey of 23 countries, Spain ranks highest in support for Transgender rights while Russia ranks lowest. Hover on each country to get deeper insights about each of them.
+              </section>
+            <section class="step">
+              <div class="title">Best of Luck to Me in 2015</div>
+              The world may never know, or care, but hopefully these insights improve my speaking in 2015. Though preliminary results aren't looking so good.
+            </section>
+          </div>
+          <div id='vis'>
+          </div>
+          <div id="extra-space">
+          </div>
+        </div>
+      </div>
+      
+      
+      <script src="lib/d3.js"></script>
+      <script src="js/scroller.js"></script>
+      <script src="js/sections.js"></script>
+</section>
+
+
+<section class="footer3 cid-s48P1Icc8J mbr-reveal" once="footers" id="footer3-i">
+
+    
+
+    
+
+    <div class="container">
+        <div class="media-container-row align-center mbr-white">
+            <div class="row row-links">
+                <ul class="foot-menu">
+                    
+                    
+                    
+                    
+                    
+                <li class="foot-menu-item mbr-fonts-style display-7"></li><li class="foot-menu-item mbr-fonts-style display-7"></li><li class="foot-menu-item mbr-fonts-style display-7">sharadshashank.herokuapp.com</li></ul>
+            </div>
+            <div class="row social-row">
+                <div class="social-list align-right pb-2">
+                    
+                    
+                    
+                    
+                    
+                    
+                <div class="soc-item">
+                        <a href="https://twitter.com/mobirise" target="_blank">
+                            <span class="socicon-twitter socicon mbr-iconfont mbr-iconfont-social"></span>
+                        </a>
+                    </div>
+            </div>
+            <div class="row row-copirayt">
+                <p class="mbr-text mb-0 mbr-fonts-style mbr-white align-center display-7">
+                    © Copyright 2020 Sharad Shashank. All Rights Reserved.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+<section style="background-color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; color:#aaa; font-size:12px; padding: 0; align-items: center; display: flex;"><a href="https://mobirise.site" style="flex: 1 1; height: 3rem; padding-left: 1rem;"></a></section>
+
+<script src="assets/web/assets/jquery/jquery.min.js"></script> 
+<script src="assets/popper/popper.min.js"></script> 
+<script src="assets/tether/tether.min.js"></script> 
+<script src="assets/bootstrap/js/bootstrap.min.js"></script> 
+<script src="assets/smoothscroll/smooth-scroll.js"></script> 
+<script src="assets/parallax/jarallax.min.js"></script> 
+<script src="assets/dropdown/js/nav-dropdown.js"></script> 
+<script src="assets/dropdown/js/navbar-dropdown.js"></script> 
+<script src="assets/touchswipe/jquery.touch-swipe.min.js"></script> 
+<script src="assets/theme/js/script.js"></script>  
+  
+  
+</body>
+</html>

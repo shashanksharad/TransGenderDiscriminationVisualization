@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<body>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://d3js.org/queue.v1.min.js"></script>
+<script src="https://d3js.org/topojson.v1.min.js"></script>
+<script src="js/d3-tip.js"></script>
+<script>
+
+
+var height = 400;
+var width = 500;
+    var data=[
+  {
+    name: "Lack of Legal Protection",
+    title: "Lack of Legal Protection",
+    color: "#2E86C1",
+    value: 100,
+  },
+  {
+    name: "Poverty",
+    title: "Poverty",
+    color: "#229954",
+    value: 29,
+  },
+  {
+    name: "Stigma, Harassment & Discrimination",
+    title: "Stigma, Harassment & Discrimination",
+    color: "#AAB7B8",
+    value: 100,
+  },
+   
+  { name: "Violence", title: "Violence",color: "#E74C3C", value: 54 },
+  { name: "Lack of Health Coverage", title: "Lack of Health Coverage",color: "#F4D03F", value: 22 },
+  { name: "Inaccurate ID Documents", title: "Inaccurate ID Documents",color: "#884EA0", value: 50 },
+  
+];
+
+var pack = data => d3.pack()
+    .size([width , height ])
+ 
+  (d3.hierarchy({children: data})
+    .sum(d => {
+    // console.log(d)
+    return d.value})
+  .sort((a, b) => b.value - a.value));
+
+  const root = pack(data);
+//   console.log(root);
+  const simulation = d3
+    .forceSimulation(root.leaves())
+    .force("x", d3.forceX(width / 2).strength(0.5))
+    .force("y", d3.forceY(height / 2).strength(0.5))
+    .force('charge', d3.forceManyBody().strength(500))
+    .force(
+      "collision",
+      d3
+        .forceCollide()
+        .radius(function(d) {
+          return d.r + 2;
+        })
+        .strength(0.8)
+    );
+
+  const svg = d3
+    .create("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("font-size", 18)
+    .attr("font-family", "OpenSans")
+    .attr("font-weight", "bold")
+    .attr("text-anchor", "middle");
+
+  const leaf = svg
+    .selectAll("g")
+    .data(root.leaves())
+    .append("g")
+    .attr("transform", d => `translate(${d.x + 1},${d.y + 1})`);
+
+  leaf
+    .append("circle")
+    .attr("r", d => d.r)
+    .attr("fill-opacity", 0.5)
+    .attr("fill", d => d.data.color);
+
+  leaf
+    .append("text")
+    .attr("fill", d => d.data.color)
+    .selectAll("tspan")
+    .data(d => d.data.title.split(/(?=[A-Z][^A-Z])/g))
+    .append("tspan")
+    .attr("x", 0)
+    .attr("y", (d, i, nodes) => `${i - nodes.length / 2 + 0.8}em`)
+    .text(d => d);
+
+  simulation.on("tick", () => {
+    // console.log(root.leaves());
+    leaf.attr("transform", d => `translate(${d.x + 1},${d.y + 1})`);
+  });
+
+//   invalidation.then(() => simulation.stop());
+</script>
+<div class="g"></div>
+</body>
+</html>
