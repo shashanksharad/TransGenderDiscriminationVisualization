@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+.pie-chart .slice {
+  stroke: black;
+}
+</style>
+<body>
+
+<svg class="chart js-chart"></svg>
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script type="text/javascript">
+"use strict";
+
+/* global d3, document, window */
+function pieChart (options) {
+  var animationDuration = 500,
+    color = d3.scaleOrdinal(d3.schemeCategory10),
+    data = [],
+    innerRadius = 0,
+    outerRadius = 100,
+    arc = d3.arc(),
+
+    width = 600,
+    height = 520,
+    margin = 20,
+
+    radius = Math.min(width, height) / 2+100,
+
+    arc_ = d3.arc()
+        .innerRadius(radius * 0.2)         // This is the size of the donut hole
+        .outerRadius(radius * 0.8),
+
+    outerArc = d3.arc()
+        .innerRadius(radius*0.7)
+        .outerRadius(radius*0.7),
+    
+    
+    pie = d3.pie()
+      .sort(null)
+      .value(function (d) {
+        return d.value;
+      });
+
+
+
+  function updateTween (d) {
+    var i = d3.interpolate(this._current, d);
+    this._current = i(0);
+
+   
+    return function(t) {
+      return arc(i(t));
+    };
+  }
+
+  function exitTween (d) {
+    var end = Object.assign({}, this._current, { startAngle: this._current.endAngle });
+    var i = d3.interpolate(d, end);
+    return function(t) {
+      return arc(i(t));
+    };
+  }
+
+  function joinKey (d) {
+    return d.data.series;
+  }
+
+  function pieChart (context) {
+    
+    
+
+
+    var slices = context.selectAll('.slice').data(pie(data), joinKey);
+
+    var oldSlices = slices.exit();
+
+    var newSlices = slices.enter().append('path')
+      .each(function(d) { this._current = Object.assign({}, d, { startAngle: d.endAngle }); })
+      .attr('class', 'slice')
+      .style('fill', function (d) { return color(joinKey(d)); });
+
+
+
+//         context
+//   .selectAll('allPolylines')
+//         .style('opacity', 0)
+var newpolylines = context
+    .selectAll('allPolylines')
+    .attr("stroke", "white")
+    .transition()
+        .duration(1200)
+        .delay(600)
+        .style('opacity', 0)
+
+var newlabels = context
+    .selectAll('allLabels')
+    .transition()
+    .duration(1200)
+    .delay(600)
+    .style('opacity', 0)
+
+context.selectAll('allPolylines')
+    .data(pie(data), joinKey)
+    .enter()
+    .append('polyline')
+    .attr('class', 'allPolylines')
+    .attr("stroke", "black")
+        .style("fill", "none")
+        .attr("stroke-width", 3)
+        .transition()
+        .duration(1200)
+        .delay(600)
+        .style("opacity", 1)
+        .attr('points', function(d) {
+        var posA = arc_.centroid(d) // line insertion in the slice
+        var posB = outerArc.centroid(d) // line break: we use the other arc generator that has been built only for that
+        var posC = outerArc.centroid(d); // Label position = almost the same as posB
+        var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2 // we need the angle to see if the X position will be at the extreme right or extreme left
+        posC[0] = radius * 0.8 * (midangle < Math.PI ? 1 : -1); // multiply by 1 or -1 to put it on the right or on the left
+        return [posA, posB, posC]
+        });
+
+
+console.log(context)
+
+// Add the polylines between chart and labels:
+context.selectAll('allLabels')
+  .data(pie(data), joinKey)
+  .enter()
+  .append('text')
+  .attr('class', 'allLabels')
+    .text( function(d) { console.log(d.data.series) ; return d.data.series } )
+    .style("opacity", 0)
+    .attr('transform', function(d) {
+        var pos = outerArc.centroid(d);
+        var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
+        pos[0] = radius * 0.85 * (midangle < Math.PI ? 1 : -1);
+        return 'translate(' + pos + ')';
+    })
+    .transition()
+    .duration(1200)
+    .delay(600)
+    .style("opacity", 1)
+    .style('text-anchor', function(d) {
+        var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
+        return (midangle < Math.PI ? 'start' : 'end')
+    })
+   
+
+    var t = d3.transition().duration(animationDuration);
+
+    arc.innerRadius(innerRadius).outerRadius(outerRadius);
+
+    oldSlices
+      .transition(t)
+        .attrTween('d', exitTween)
+        .remove();
+
+    var t2 = t.transition();
+    slices
+      .transition(t2)
+        .attrTween('d', updateTween);
+
+    var t3 = t2.transition();
+    newSlices
+      .transition(t3)
+        .attrTween('d', updateTween);
+
+
+
+  }
+
+  pieChart.data = function (_) {
+    return arguments.length ? (data = _, pieChart) : data;
+  };
+
+  pieChart.innerRadius = function (_) {
+    return arguments.length ? (innerRadius = _, pieChart) : innerRadius;
+  };
+
+  pieChart.outerRadius = function (_) {
+    return arguments.length ? (outerRadius = _, pieChart) : outerRadius;
+  };
+
+
+    
+
+  return pieChart;
+}
+
+var width = document.querySelector('body').clientWidth;
+var height = 500;
+var dataset1 = [{series: 'HI', value: 1}, {series: 2, value: 2}, {series: 3, value: 3}, {series: 4, value: 4}, {series: 5, value: 5}];
+var dataset2 = [{series: 1, value: 5}, {series: 3, value: 4}, {series: 6, value: 3}];
+var pieChart = pieChart().outerRadius(220).innerRadius(150);
+
+var svg = d3.select('.js-chart')
+  .attr('width', width)
+  .attr('height', height);
+
+
+
+var domPieChart = svg.append('g')
+  .attr('class', 'pie-chart')
+  .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
+  .call(pieChart.data(dataset1));
+
+// d3.select('.js-chart').select('.pie-chart')
+//     .selectAll('allLabels')
+//     .style("opacity", 1)
+
+var toggle = true;
+domPieChart.call(pieChart.data(dataset1));
+window.setInterval(function() {
+  if (toggle) {
+    console.log(domPieChart)
+    domPieChart.call(pieChart.data(dataset2));
+
+
+  } else {
+    // svg.selectall('allPolylines')
+    //   .style('opacity', 0)
+    domPieChart.call(pieChart.data(dataset1));
+  }
+  toggle = !toggle;
+}, 3500);
+</script>
+</body>

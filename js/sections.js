@@ -152,7 +152,7 @@ var yAxisgrpbar = d3.axisLeft(y);
       console.log(fillerCounts)
       // set the bar scale's domain
       var countMax = d3.max(fillerCounts, function (d) { return d.value;});
-      xBarScale.domain([0, countMax]);
+      xBarScale.domain([0, 100]);
 
       // get aggregated histogram data
 
@@ -201,7 +201,7 @@ var yAxisgrpbar = d3.axisLeft(y);
     g.selectAll('.openvis-title')
       .attr('opacity', 0);
 
-var color = d3.scaleThreshold()
+var color_ = d3.scaleThreshold()
     .domain([0, 20, 40, 45, 50, 55, 60, 65, 70, 80])
     .range(["rgba(247,251,255, 0)", "rgb(222,235,247)", "rgb(198,219,239)", "rgb(158,202,225)", "rgb(107,174,214)", "rgb(66,146,198)","rgb(33,113,181)","rgb(8,81,156)","rgb(8,48,107)","rgb(3,19,43)"]);
       
@@ -231,9 +231,6 @@ function ready(error, data, population) {
   console.log(data)
 
 
-  
-
-
 var countries = g.selectAll(".countries").data(data.features)
 
 var countries_e = countries.enter()
@@ -242,7 +239,7 @@ var countries_e = countries.enter()
     
   countries = countries.merge(countries_e)
     .attr("d", path)
-    .style("fill", function(d) { if (populationById[d.id]) {return color(populationById[d.id])} else {return "rgb(240,240,240)"}; })
+    .style("fill", function(d) { if (populationById[d.id]) {return color_(populationById[d.id])} else {return "rgb(240,240,240)"}; })
     .style('stroke', 'white')
     .style('stroke-width', 1.5)
     .style("opacity", 0)
@@ -457,7 +454,7 @@ function display(error, data) {
 d3.csv('https://raw.githubusercontent.com/shashanksharad/TransgenderDiscrimination/main/TransDiscriminationData.csv', display)
 
 
-////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////
 
 dataset =[
   {
@@ -510,114 +507,310 @@ dataset =[
       .attr('fill', 'white')
       .attr('opacity', 0);
 
-      ////////////////////////////////////////////////////////////////////////////////////////////////
+//       ////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+var data = [ {name: "one", value: 10},
+			{name: "two", value:  30},
+			{name: "three", value:  50},
+			{name: "four", value:  5},
+			{name: "five", value:  15} ];
+
+// var margin = {top: 20, right: 20, bottom: 20, left: 20};
+// 	width = 400 - margin.left - margin.right;
+// 	height = width - margin.top - margin.bottom;
+
+
+
+// var g = d3.select("g")
+// .attr("transform", "translate(" + ((width/2)+margin.left) + "," + ((height/2)+margin.top) + ")");
+
+console.log(width);
+var radius = Math.min(width, height) / 2;
+
+var color_donut = d3.scaleOrdinal().range(d3.schemeDark2);
+
+var arc = d3.arc()
+  .innerRadius(radius * 0.4)         // This is the size of the donut hole
+  .outerRadius(radius * 0.7);
+  
+console.log(arc.centroid)   
+var outerArc = d3.arc()
+  .innerRadius(radius * 0.75)
+  .outerRadius(radius * 0.75);
+
+var pie = d3.pie()
+    .sort(null)
+    .value(function(d) { return d.value; });
+
+
+var arcs = g.selectAll(".arc")
+  .data(pie(data));
+  
+var arcse = arcs.enter().append("path")
+  .attr("class", "arc");
+
+arcs = arcs.merge(arcse)
+  .style("fill", function(d) { return color_donut(d.data.name); })
+  .attr("stroke", "white")
+  .attr("stroke-width", 6)
+  .attr('opacity', 0);
+  arcse.attr("transform", "translate(" + ((width/2)) + "," + ((height/2)) + ")");
+  
+
+  
+  // Add the polylines between chart and labels:
+	var dc_polylines = g.selectAll('.dc_poly').data(pie(data));
+  
+  var dc_polylinese = dc_polylines.enter()
+  	.append('polyline')
+    .attr('class','dc_poly');
+  
+  dc_polylines = dc_polylines.merge(dc_polylinese)
+    .attr("stroke", "black")
+    .style("fill", "none")
+    .attr("stroke-width", 1)
+    .attr('points', function(d) {
+      var posA = arc.centroid(d) // line insertion in the slice
+      var posB = outerArc.centroid(d) // line break: we use the other arc generator that has been built only for that
+      var posC = outerArc.centroid(d); // Label position = almost the same as posB
+      var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2 ;// we need the angle to see if the X position will be at the extreme right or extreme left
+      console.log(midangle)
+      posC[0] = radius * 0.75 * (midangle < Math.PI ? 1 : -1); // multiply by 1 or -1 to put it on the right or on the left
+      return [posA, posB, posC]
+    })
+    .attr('opacity', 0);
+    dc_polylinese.attr("transform", "translate(" + ((width/2)) + "," + ((height/2)) + ")");
+
+// Add the polylines between chart and labels:
+  var dc_labels = g.selectAll('.dc_lbls').data(pie(data));
+  
+  var dc_labelse = dc_labels.enter()
+  .append('text')
+  .text( function(d) { console.log(d.data.name) ; return d.data.name } )
+  .attr('class', 'dc_lbls');
+
+  // dc_labelse.attr("transform", "translate(" + ((width/2)) + "," + ((height/2)) + ")");
+
+  dc_labels = dc_labels.merge(dc_labelse)
+    .attr('transform', function(d) {
+        var pos = outerArc.centroid(d);
+        var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
+        pos[0] = radius * 0.79 * (midangle < Math.PI ? 1 : -1)+width/2;
+        pos[1] = pos[1]+height/2;
+        return 'translate(' + pos + ')';
+    })
+    .style('text-anchor', function(d) {
+        var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
+        return (midangle < Math.PI ? 'start' : 'end')
+    })
+    .attr('opacity', 0);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var data2 = [ {name: "one", value: 850},
+{name: "two", value:  550},
+{name: "three", value:  600},
+{name: "four", value:  300},
+{name: "five", value:  150} ];
+
+// var margin = {top: 20, right: 20, bottom: 20, left: 20};
+// 	width = 400 - margin.left - margin.right;
+// 	height = width - margin.top - margin.bottom;
+
+
+
+// var g = d3.select("g")
+// .attr("transform", "translate(" + ((width/2)+margin.left) + "," + ((height/2)+margin.top) + ")");
+
+console.log(width);
+var radius = Math.min(width, height) / 2;
+
+var color_donut = d3.scaleOrdinal().range(d3.schemeDark2);
+
+var arc = d3.arc()
+.innerRadius(radius * 0.4)         // This is the size of the donut hole
+.outerRadius(radius * 0.7);
+
+console.log(arc.centroid)   
+var outerArc = d3.arc()
+.innerRadius(radius * 0.75)
+.outerRadius(radius * 0.75);
+
+var pie = d3.pie()
+.sort(null)
+.value(function(d) { return d.value; });
+
+
+var arcs = g.selectAll(".arc_")
+.data(pie(data2));
+
+var arcse = arcs.enter().append("path")
+.attr("class", "arc_");
+
+arcs = arcs.merge(arcse)
+.style("fill", function(d) { return color_donut(d.data.name); })
+.attr("stroke", "white")
+.attr("stroke-width", 6)
+.attr('opacity', 0);
+arcse.attr("transform", "translate(" + ((width/2)) + "," + ((height/2)) + ")");
+
+
+
+// Add the polylines between chart and labels:
+var dc_polylines = g.selectAll('.dc_poly_').data(pie(data2));
+
+var dc_polylinese = dc_polylines.enter()
+.append('polyline')
+.attr('class','dc_poly_');
+
+dc_polylines = dc_polylines.merge(dc_polylinese)
+.attr("stroke", "black")
+.style("fill", "none")
+.attr("stroke-width", 1)
+.attr('points', function(d) {
+var posA = arc.centroid(d) // line insertion in the slice
+var posB = outerArc.centroid(d) // line break: we use the other arc generator that has been built only for that
+var posC = outerArc.centroid(d); // Label position = almost the same as posB
+var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2 ;// we need the angle to see if the X position will be at the extreme right or extreme left
+console.log(midangle)
+posC[0] = radius * 0.75 * (midangle < Math.PI ? 1 : -1); // multiply by 1 or -1 to put it on the right or on the left
+return [posA, posB, posC]
+})
+.attr('opacity', 0);
+dc_polylinese.attr("transform", "translate(" + ((width/2)) + "," + ((height/2)) + ")");
+
+// Add the polylines between chart and labels:
+var dc_labels = g.selectAll('.dc_lbls_').data(pie(data2));
+
+var dc_labelse = dc_labels.enter()
+.append('text')
+.text( function(d) { console.log(d.data.name) ; return d.data.name } )
+.attr('class', 'dc_lbls_');
+
+// dc_labelse.attr("transform", "translate(" + ((width/2)) + "," + ((height/2)) + ")");
+
+dc_labels = dc_labels.merge(dc_labelse)
+.attr('transform', function(d) {
+  var pos = outerArc.centroid(d);
+  var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
+  pos[0] = radius * 0.79 * (midangle < Math.PI ? 1 : -1)+width/2;
+  pos[1] = pos[1]+height/2;
+  return 'translate(' + pos + ')';
+})
+.style('text-anchor', function(d) {
+  var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
+  return (midangle < Math.PI ? 'start' : 'end')
+})
+.attr('opacity', 0); 
+
+    
+
+
+// /////////////////////////////////////////////////
+
+// var color = d3.scaleOrdinal()
+//     .range(["#2c3e50","#95a5a6"]);
+
+//   // var svg = g.append("svg")
+//   //   .append("g")
+
+// // var g = d3.select('g')
+// //     .attr("width", width + margin.left + margin.right)
+// //     .attr("height", height + margin.top + margin.bottom)
+
+// d3.json("https://raw.githubusercontent.com/shashanksharad/TransgenderDiscrimination/main/wage_group_barchart.json", function(error, data) {
+//     // console.log(data);
+
+//   var categoriesNames = data.map(function(d) { return d.categorie; });
+//   var rateNames = data[0].values.map(function(d) { return d.rate; });
+
+//   x0.domain(categoriesNames);
+//   x1.rangeRound([0, x0.bandwidth()]).domain(rateNames);
+//   y.domain([0, d3.max(data, function(categorie) { return d3.max(categorie.values, function(d) { return d.value; }); })]);
 
 
 
 
-var color = d3.scaleOrdinal()
-    .range(["#2c3e50","#95a5a6"]);
 
-  // var svg = g.append("svg")
-  //   .append("g")
+//   g.selectAll('xaxisgrpbar')
+//       .append('xaxisgrpbar')
+//       .attr("class", "xaxisgrpbar")
+//       .attr("transform", "translate(0," + height + ")")
+//       .call(xAxisgrpbar);
 
-// var g = d3.select('g')
-//     .attr("width", width + margin.left + margin.right)
-//     .attr("height", height + margin.top + margin.bottom)
-
-d3.json("https://raw.githubusercontent.com/shashanksharad/TransgenderDiscrimination/main/wage_group_barchart.json", function(error, data) {
-    // console.log(data);
-
-  var categoriesNames = data.map(function(d) { return d.categorie; });
-  var rateNames = data[0].values.map(function(d) { return d.rate; });
-
-  x0.domain(categoriesNames);
-  x1.rangeRound([0, x0.bandwidth()]).domain(rateNames);
-  y.domain([0, d3.max(data, function(categorie) { return d3.max(categorie.values, function(d) { return d.value; }); })]);
-
-
-
-
-//////////////////////////////////////////////////////////
-
-  g.selectAll('xaxisgrpbar')
-      .append('xaxisgrpbar')
-      .attr("class", "xaxisgrpbar")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxisgrpbar);
-
-  g.selectAll('yaxisgrpbar')
-      .append('yaxisgrpbar')
-      .attr("class", "yaxisgrpbar")
-      .style('opacity','0')
-      .call(yAxisgrpbar)
-      .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .style('font-weight','bold')
-      .text("Value");
+//   g.selectAll('yaxisgrpbar')
+//       .append('yaxisgrpbar')
+//       .attr("class", "yaxisgrpbar")
+//       .style('opacity','0')
+//       .call(yAxisgrpbar)
+//       .append("text")
+//       .attr("transform", "rotate(-90)")
+//       .attr("y", 6)
+//       .attr("dy", ".71em")
+//       .style("text-anchor", "end")
+//       .style('font-weight','bold')
+//       .text("Value");
 
 
 
  
 
-  g.select('.yaxisgrpbar').transition().duration(500).delay(1300).style('opacity','1');
+//   g.select('.yaxisgrpbar').transition().duration(500).delay(1300).style('opacity','1');
 
-  var slice = g.selectAll("grpbar")
-      .data(data)
-      .enter().append("rect")
-      .attr("class", "grpbar")
-      .attr("transform",function(d) { return "translate(" + x0(d.categorie) + ",0)"; });
+//   var slice = g.selectAll("grpbar")
+//       .data(data)
+//       .enter().append("rect")
+//       .attr("class", "grpbar")
+//       .attr("transform",function(d) { return "translate(" + x0(d.categorie) + ",0)"; });
 
-  slice.selectAll("grpbar")
-      .data(function(d) { return d.values; })
-      .enter().append("rect")
-      .attr("width", x1.bandwidth())
-      .attr("x", function(d) { return x1(d.rate); })
-      .style("fill", function(d) { return color(d.rate) })
-      .attr('opacity', 1)
-      .attr("y", function(d) { return 10; })
-      .attr("height", function(d) { return height-10; })
-      .on("mouseover", function(d) {
-          d3.select(this).style("fill", d3.rgb(color(d.rate)).darker(2));
-      })
-      .on("mouseout", function(d) {
-          d3.select(this).style("fill", color(d.rate));
-      });
+//   slice.selectAll("grpbar")
+//       .data(function(d) { return d.values; })
+//       .enter().append("rect")
+//       .attr("width", x1.bandwidth())
+//       .attr("x", function(d) { return x1(d.rate); })
+//       .style("fill", function(d) { return color(d.rate) })
+//       .attr('opacity', 1)
+//       .attr("y", function(d) { return 10; })
+//       .attr("height", function(d) { return height-10; })
+//       .on("mouseover", function(d) {
+//           d3.select(this).style("fill", d3.rgb(color(d.rate)).darker(2));
+//       })
+//       .on("mouseout", function(d) {
+//           d3.select(this).style("fill", color(d.rate));
+//       });
 
-  slice.selectAll("grpbar")
-      .transition()
-      .delay(function (d) {return Math.random()*1000;})
-      .duration(1000)
-      .attr("y", function(d) { return 10; })
-      .attr("height", function(d) { return height - 10; });
+//   slice.selectAll("grpbar")
+//       .transition()
+//       .delay(function (d) {return Math.random()*1000;})
+//       .duration(1000)
+//       .attr("y", function(d) { return 10; })
+//       .attr("height", function(d) { return height - 10; });
 
-  //Legend
-  var legend = svg.selectAll(".legend")
-      .data(data[0].values.map(function(d) { return d.rate; }).reverse())
-  .enter().append("g")
-      .attr("class", "legend")
-      .attr("transform", function(d,i) { return "translate(0," + i * 20 + ")"; })
-      .style("opacity",1);
+//   //Legend
+//   var legend = svg.selectAll(".legend")
+//       .data(data[0].values.map(function(d) { return d.rate; }).reverse())
+//   .enter().append("g")
+//       .attr("class", "legend")
+//       .attr("transform", function(d,i) { return "translate(0," + i * 20 + ")"; })
+//       .style("opacity",1);
 
-  legend.append("rect")
-      .attr("x", width - 18)
-      .attr("width", 18)
-      .attr("height", 18)
-      .style("fill", function(d) { return color(d); });
+//   legend.append("rect")
+//       .attr("x", width - 18)
+//       .attr("width", 18)
+//       .attr("height", 18)
+//       .style("fill", function(d) { return color(d); });
 
-  legend.append("text")
-      .attr("x", width - 24)
-      .attr("y", 9)
-      .attr("dy", ".35em")
-      .style("text-anchor", "end")
-      .text(function(d) {return d; });
+//   legend.append("text")
+//       .attr("x", width - 24)
+//       .attr("y", 9)
+//       .attr("dy", ".35em")
+//       .style("text-anchor", "end")
+//       .text(function(d) {return d; });
 
-  legend.transition().duration(500).delay(function(d,i){ return 1300 + 100 * i; }).style("opacity","1");
+//   legend.transition().duration(500).delay(function(d,i){ return 1300 + 100 * i; }).style("opacity","1");
 
-});
+// });
 
 
 
@@ -667,11 +860,13 @@ d3.json("https://raw.githubusercontent.com/shashanksharad/TransgenderDiscriminat
     // activateFunctions[4] = showGrid;
     // activateFunctions[5] = highlightGrid;
     activateFunctions[4] = showBar;
-    activateFunctions[5] = showGroupHistPart;
-    activateFunctions[6] = showHistPart;
-    activateFunctions[7] = showHistAll;
-    activateFunctions[8] = showCough;
+    activateFunctions[5] = showDonut1;
+    activateFunctions[6] = showDonut2;
+    activateFunctions[7] = showGroupHistPart;
+    activateFunctions[8] = showHistPart;
     activateFunctions[9] = showHistAll;
+    activateFunctions[10] = showCough;
+    activateFunctions[11] = showHistAll;
 
     // updateFunctions are called while
     // in a particular section to update
@@ -679,7 +874,7 @@ d3.json("https://raw.githubusercontent.com/shashanksharad/TransgenderDiscriminat
     // Most sections do not need to be updated
     // for all scrolling and so are set to
     // no-op functions.
-    for (var i = 0; i < 10; i++) {
+    for (var i = 0; i < 12; i++) {
       updateFunctions[i] = function () {};
     }
     updateFunctions[7] = updateCough;
@@ -1041,24 +1236,167 @@ g.selectAll('.bubble')
       .delay(1200)
       .attr('opacity', 1);
 
-      // g.selectAll("grpbar")
-      // .transition()
-      // .delay(function (d) {return Math.random()*1000;})
-      // .duration(1000)
-      // .attr('opacity', 0);
+      var radius = Math.min(width, height) / 2;
+
   
-      // g.selectAll('x axis')
-      // .attr('opacity', 0);
-      // g.selectAll('y axis')
-      // .attr('opacity', 0);
+  
+
+  g.selectAll('.arc')
+  .attr('opacity', 0)
+  
+      g.selectAll('.dc_poly')
+      .transition()
+        .duration(0)
+        .attr('opacity', 0);
+      g.selectAll('.dc_lbls')
+      .transition()
+        .duration(0)
+        .attr('opacity', 0);
+
+    // var tips = document.getElementsByClassName('arc')
+    // for (var i = 0; i < tips.length; i++) {
+    //   tips[i].style.display = "none";
+    // }
+
+    // var tips = document.getElementsByClassName('dc_poly')
+    // for (var i = 0; i < tips.length; i++) {
+    //   tips[i].style.display = "none";
+    // }
+
+    // var tips = document.getElementsByClassName('dc_lbls')
+    // for (var i = 0; i < tips.length; i++) {
+    //   tips[i].style.display = "none";
+    // }
+
+     
+
+  
 
       
       
   }
 
+  /////////////////////////////////////
+
+  function showDonut1(){
+    hideAxis(xAxisBar);
+
+    g.selectAll('.bar-text')
+    .transition()
+    .duration(0)
+    .attr('opacity', 0);
+
+  g.selectAll('.bar')
+    .transition()
+    .duration(600)
+    .attr('width', 0);
+
+  var radius = Math.min(width, height) / 2;
+
+  
+  var arc = d3.arc()
+    .innerRadius(radius * 0.4)         // This is the size of the donut hole
+    .outerRadius(radius * 0.7);
+
+  g.selectAll('.arc')
+  .transition().delay(function(d, i) { return i*700; }).duration(700)
+  .attrTween('d', function(d) {
+  var i = d3.interpolate(d.startAngle+0.1, d.endAngle);
+       return function(t) {
+           d.endAngle = i(t);
+         return arc(d);
+       }
+  })
+  .attr('opacity', 1)
+  ;
+  g.selectAll('.dc_poly')
+  .transition().delay(function(d, i) { return i*700; }).duration(700)
+  .attr('opacity', 1);
+  g.selectAll('.dc_lbls')
+  .transition().delay(function(d, i) { return i*700; }).duration(700)
+  .attr('opacity', 1);
+
+  g.selectAll('.arc_')
+  .attr('opacity', 0)
+  
+  g.selectAll('.dc_poly_')
+  .transition()
+    .duration(0)
+    .attr('opacity', 0);
+  g.selectAll('.dc_lbls_')
+  .transition()
+    .duration(0)
+    .attr('opacity', 0);
+  
+
+    
+  }
+ /////////////////////////////////////////////////////
+
+ function showDonut2(){
+  g.selectAll('.arc')
+  .attr('opacity', 0)
+  
+      g.selectAll('.dc_poly')
+      .transition()
+        .duration(0)
+        .attr('opacity', 0);
+      g.selectAll('.dc_lbls')
+      .transition()
+        .duration(0)
+        .attr('opacity', 0);
+
+ 
+
+var radius = Math.min(width, height) / 2;
+
+
+var arc = d3.arc()
+  .innerRadius(radius * 0.4)         // This is the size of the donut hole
+  .outerRadius(radius * 0.7);
+
+g.selectAll('.arc_')
+.transition().delay(function(d, i) { return i*700; }).duration(700)
+.attrTween('d', function(d) {
+var i = d3.interpolate(d.startAngle+0.1, d.endAngle);
+     return function(t) {
+         d.endAngle = i(t);
+       return arc(d);
+     }
+})
+.attr('opacity', 1)
+;
+g.selectAll('.dc_poly_')
+.transition().delay(function(d, i) { return i*700; }).duration(700)
+.attr('opacity', 1);
+g.selectAll('.dc_lbls_')
+.transition().delay(function(d, i) { return i*700; }).duration(700)
+.attr('opacity', 1);
+
+
+
+  
+}
+
+
+
+
 //////////////////////////////////////////////////////////////////////
   function showGroupHistPart(){
-    hideAxis(xAxisBar);
+
+    g.selectAll('.arc_')
+    .attr('opacity', 0)
+    
+    g.selectAll('.dc_poly_')
+    .transition()
+      .duration(0)
+      .attr('opacity', 0);
+    g.selectAll('.dc_lbls_')
+    .transition()
+      .duration(0)
+      .attr('opacity', 0);
+
+    
     // showAxis(xAxisgrpbar);
     // showAxis(yAxisgrpbar);
     
@@ -1080,15 +1418,7 @@ g.selectAll('.bubble')
     //     .attr('opacity', 1);
 
 
-    g.selectAll('.bar-text')
-    .transition()
-    .duration(0)
-    .attr('opacity', 0);
-
-  g.selectAll('.bar')
-    .transition()
-    .duration(600)
-    .attr('width', 0);
+    
   }
 //////////////////////////////////////////////////////////////////////
 
