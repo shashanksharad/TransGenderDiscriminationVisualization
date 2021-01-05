@@ -822,23 +822,23 @@ dc_labels = dc_labels.merge(dc_labelse)
     // histogram
     // @v4 Using .merge here to ensure
     // new and old data have same attrs applied
-    var hist = g.selectAll('.hist').data(histData);
-    var histE = hist.enter().append('rect')
-      .attr('class', 'hist');
-    hist = hist.merge(histE).attr('x', function (d) { return xHistScale(d.x0); })
-      .attr('y', height)
-      .attr('height', 0)
-      .attr('width', xHistScale(histData[0].x1) - xHistScale(histData[0].x0) - 1)
-      .attr('fill', barColors[0])
-      .attr('opacity', 0);
+    // var hist = g.selectAll('.hist').data(histData);
+    // var histE = hist.enter().append('rect')
+    //   .attr('class', 'hist');
+    // hist = hist.merge(histE).attr('x', function (d) { return xHistScale(d.x0); })
+    //   .attr('y', height)
+    //   .attr('height', 0)
+    //   .attr('width', xHistScale(histData[0].x1) - xHistScale(histData[0].x0) - 1)
+    //   .attr('fill', barColors[0])
+    //   .attr('opacity', 0);
 
-    // cough title
-    g.append('text')
-      .attr('class', 'sub-title cough cough-title')
-      .attr('x', width / 2)
-      .attr('y', 60)
-      .text('cough')
-      .attr('opacity', 0);
+    // // cough title
+    // g.append('text')
+    //   .attr('class', 'sub-title cough cough-title')
+    //   .attr('x', width / 2)
+    //   .attr('y', 60)
+    //   .text('cough')
+    //   .attr('opacity', 0);
 
 
   };
@@ -1241,8 +1241,11 @@ g.selectAll('.bubble')
   
   
 
-  g.selectAll('.arc')
-  .attr('opacity', 0)
+      g.selectAll('.arc')
+      .transition().delay(function(d, i) { return (5-i)*100; }).duration(100)
+      .attr('opacity', 0)
+      
+      ;
   
       g.selectAll('.dc_poly')
       .transition()
@@ -1297,9 +1300,9 @@ g.selectAll('.bubble')
   var arc = d3.arc()
     .innerRadius(radius * 0.4)         // This is the size of the donut hole
     .outerRadius(radius * 0.7);
-
+    var tr_dur = 700;
   g.selectAll('.arc')
-  .transition().delay(function(d, i) { return i*700; }).duration(700)
+  .transition().delay(function(d, i) { return i*tr_dur; }).duration(tr_dur)
   .attrTween('d', function(d) {
   var i = d3.interpolate(d.startAngle+0.1, d.endAngle);
        return function(t) {
@@ -1309,15 +1312,22 @@ g.selectAll('.bubble')
   })
   .attr('opacity', 1)
   ;
+
+  
   g.selectAll('.dc_poly')
-  .transition().delay(function(d, i) { return i*700; }).duration(700)
+  .transition().delay(function(d, i) { return i*tr_dur; }).duration(tr_dur)
   .attr('opacity', 1);
   g.selectAll('.dc_lbls')
-  .transition().delay(function(d, i) { return i*700; }).duration(700)
+  .transition().delay(function(d, i) { return i*tr_dur; }).duration(tr_dur)
   .attr('opacity', 1);
 
+ 
+
   g.selectAll('.arc_')
-  .attr('opacity', 0)
+      .transition().delay(function(d, i) { return (5-i)*100; }).duration(100)
+      .attr('opacity', 0)
+      
+      ;
   
   g.selectAll('.dc_poly_')
   .transition()
@@ -1335,7 +1345,10 @@ g.selectAll('.bubble')
 
  function showDonut2(){
   g.selectAll('.arc')
-  .attr('opacity', 0)
+      .transition().delay(function(d, i) { return (5-i)*100; }).duration(100)
+      .attr('opacity', 0)
+      
+      ;
   
       g.selectAll('.dc_poly')
       .transition()
@@ -1354,9 +1367,9 @@ var radius = Math.min(width, height) / 2;
 var arc = d3.arc()
   .innerRadius(radius * 0.4)         // This is the size of the donut hole
   .outerRadius(radius * 0.7);
-
+var tr_dur = 700;
 g.selectAll('.arc_')
-.transition().delay(function(d, i) { return i*700; }).duration(700)
+.transition().delay(function(d, i) { return i*tr_dur+100; }).duration(tr_dur)
 .attrTween('d', function(d) {
 var i = d3.interpolate(d.startAngle+0.1, d.endAngle);
      return function(t) {
@@ -1367,10 +1380,10 @@ var i = d3.interpolate(d.startAngle+0.1, d.endAngle);
 .attr('opacity', 1)
 ;
 g.selectAll('.dc_poly_')
-.transition().delay(function(d, i) { return i*700; }).duration(700)
+.transition().delay(function(d, i) { return i*tr_dur; }).duration(tr_dur)
 .attr('opacity', 1);
 g.selectAll('.dc_lbls_')
-.transition().delay(function(d, i) { return i*700; }).duration(700)
+.transition().delay(function(d, i) { return i*tr_dur; }).duration(tr_dur)
 .attr('opacity', 1);
 
 
@@ -1384,17 +1397,17 @@ g.selectAll('.dc_lbls_')
 //////////////////////////////////////////////////////////////////////
   function showGroupHistPart(){
 
-    g.selectAll('.arc_')
-    .attr('opacity', 0)
+    // g.selectAll('.arc_')
+    // .attr('opacity', 0)
     
-    g.selectAll('.dc_poly_')
-    .transition()
-      .duration(0)
-      .attr('opacity', 0);
-    g.selectAll('.dc_lbls_')
-    .transition()
-      .duration(0)
-      .attr('opacity', 0);
+    // g.selectAll('.dc_poly_')
+    // .transition()
+    //   .duration(0)
+    //   .attr('opacity', 0);
+    // g.selectAll('.dc_lbls_')
+    // .transition()
+    //   .duration(0)
+    //   .attr('opacity', 0);
 
     
     // showAxis(xAxisgrpbar);
