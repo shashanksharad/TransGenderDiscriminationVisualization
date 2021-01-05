@@ -931,6 +931,188 @@ dc_labels = dc_labels.merge(dc_labelse)
 
 // /////////////////////////////////////////////////
 
+var data3 = [ {name: "Full Time Employed", value: 46},
+{name: "Part Time Employed", value:  16},
+{name: "Multiple Jobs", value:  8},
+{name: "Self Employed/Busines", value:  8},
+{name: "Self Employed/Contract", value:  4},
+{name: "Unemployed (looking)", value:  11},
+{name: "Unemployed (not looking)", value:  3},
+{name: "Disability", value:  8},
+{name: "Student", value:  20} ,
+{name: "Retired", value:  7},
+{name: "Homemaker", value:  2},
+{name: "Other", value:  7} 
+ ];
+
+// var margin = {top: 20, right: 20, bottom: 20, left: 20};
+// 	width = 400 - margin.left - margin.right;
+// 	height = width - margin.top - margin.bottom;
+
+
+
+// var g = d3.select("g")
+// .attr("transform", "translate(" + ((width/2)+margin.left) + "," + ((height/2)+margin.top) + ")");
+
+console.log(width);
+var radius = Math.min(width, height) / 2;
+
+var color_donut = d3.scaleOrdinal().range(d3.schemeCategory20);
+
+var arc = d3.arc()
+.innerRadius(radius * 0.4)         // This is the size of the donut hole
+.outerRadius(radius * 0.7);
+
+console.log(arc.centroid)   
+var outerArc = d3.arc()
+.innerRadius(radius * 0.75)
+.outerRadius(radius * 0.75);
+
+var pie = d3.pie()
+.sort(null)
+.value(function(d) { return d.value; });
+
+
+var arcs = g.selectAll(".arc__")
+.data(pie(data3));
+
+var arcse = arcs.enter().append("path")
+.attr("class", "arc__");
+
+arcs = arcs.merge(arcse)
+.style("fill", function(d) { return color_donut(d.data.name); })
+.attr("stroke", "white")
+.attr("stroke-width", 6)
+.attr('opacity', 0);
+arcse.attr("transform", "translate(" + ((width/2)) + "," + ((height/2)) + ")");
+
+
+
+// Add the polylines between chart and labels:
+var dc_polylines = g.selectAll('.dc_poly__').data(pie(data3));
+
+var dc_polylinese = dc_polylines.enter()
+.append('polyline')
+.attr('class','dc_poly__');
+
+dc_polylines = dc_polylines.merge(dc_polylinese)
+.attr("stroke", "black")
+.style("fill", "none")
+.attr("stroke-width", 1)
+.attr('points', function(d) {
+var posA = arc.centroid(d) // line insertion in the slice
+var posB = outerArc.centroid(d) // line break: we use the other arc generator that has been built only for that
+var posC = outerArc.centroid(d); // Label position = almost the same as posB
+var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2 ;// we need the angle to see if the X position will be at the extreme right or extreme left
+console.log(midangle)
+posC[0] = radius * 0.75 * (midangle < Math.PI ? 1 : -1); // multiply by 1 or -1 to put it on the right or on the left
+return [posA, posB, posC]
+})
+.attr('opacity', 0);
+dc_polylinese.attr("transform", "translate(" + ((width/2)) + "," + ((height/2)) + ")");
+
+// Add the polylines between chart and labels:
+var dc_labels = g.selectAll('.dc_lbls__').data(pie(data3));
+
+var dc_labelse = dc_labels.enter()
+.append('text')
+.text( function(d) { console.log(d.data.name) ; return d.data.name } )
+.attr('class', 'dc_lbls__');
+
+// dc_labelse.attr("transform", "translate(" + ((width/2)) + "," + ((height/2)) + ")");
+
+dc_labels = dc_labels.merge(dc_labelse)
+.attr('transform', function(d) {
+  var pos = outerArc.centroid(d);
+  var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
+  pos[0] = radius * 0.79 * (midangle < Math.PI ? 1 : -1)+width/2;
+  pos[1] = pos[1]+height/2;
+  return 'translate(' + pos + ')';
+})
+.style('text-anchor', function(d) {
+  var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
+  return (midangle < Math.PI ? 'start' : 'end')
+})
+.attr('opacity', 0); 
+
+    
+
+
+// /////////////////////////////////////////////////
+
+// Parse the Data
+d3.csv("https://raw.githubusercontent.com/shashanksharad/TransgenderDiscrimination/main/edu.csv", function(data) {
+
+  // List of subgroups = header of the csv files = soil condition here
+  var subgroups = data.columns.slice(1)
+
+  // List of groups = species here = value of the first column called group -> I show them on the X axis
+  var groups = d3.map(data, function(d){return(d.group)}).keys()
+// console.log(groups)
+  // Add X axis
+  var x = d3.scaleBand()
+      .domain(groups)
+      .range([0, width])
+      .padding([0.2])
+  g.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .attr('class', 'xaxisgrpbredu')
+    .attr('opacity', 0)
+    .call(d3.axisBottom(x).tickSize(0));
+
+  // Add Y axis
+  var y = d3.scaleLinear()
+    .domain([0, 45])
+    .range([ height, 0 ]);
+  g.append("g")
+  .attr('class', 'yaxisgrpbredu')
+  .attr('opacity', 0)
+    .call(d3.axisLeft(y));
+  // 
+
+  // Another scale for subgroup position?
+  var xSubgroup = d3.scaleBand()
+    .domain(subgroups)
+    .range([0, x.bandwidth()])
+    .padding([0.05])
+
+  // color palette = one color per subgroup
+  var color = d3.scaleOrdinal()
+    .domain(subgroups)
+    .range(['#0065a2','#00b0ba'])
+
+
+
+
+
+  // Show the bars
+ 
+    // Enter in data = loop group per group
+    g.append("g")
+    .attr('class', 'allgrpbarsedu')
+    .attr('opacity', 0)
+    .selectAll("g")
+    // Enter in data = loop group per group
+    .data(data)
+    .enter()
+    .append("g")
+    .attr('class', 'grpbaredu')
+    
+      .attr("transform", function(d) { return "translate(" + x(d.group) + ",0)"; })
+    .selectAll("rect")
+    .data(function(d) { return subgroups.map(function(key) { return {key: key, value: d[key]}; }); })
+    .enter().append("rect")
+      .attr("x", function(d) { return xSubgroup(d.key); })
+       .attr("y", function(d){
+        return y(0)})
+        .attr("height", 0)
+        .attr("width", xSubgroup.bandwidth())
+        .attr("fill", function(d) { return color(d.key); });
+        
+      
+
+
+})
 
 
       ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -962,6 +1144,8 @@ dc_labels = dc_labels.merge(dc_labelse)
     activateFunctions[6] = showGroupHistPart;
     activateFunctions[7] = showGroupHistPart2;
     activateFunctions[8] = showGroupHistPart3;
+    activateFunctions[9] = showDonut3;
+    activateFunctions[10] = showGroupHistPart4;
     // activateFunctions[8] = showHistPart;
     // activateFunctions[9] = showHistAll;
     // activateFunctions[10] = showCough;
@@ -973,7 +1157,7 @@ dc_labels = dc_labels.merge(dc_labelse)
     // Most sections do not need to be updated
     // for all scrolling and so are set to
     // no-op functions.
-    for (var i = 0; i < 9; i++) {
+    for (var i = 0; i < 11; i++) {
       updateFunctions[i] = function () {};
     }
     // updateFunctions[7] = updateCough;
@@ -1726,8 +1910,157 @@ g.selectAll('.xaxisgrpbrwagegid')
 .duration(300)
 .attr('opacity', 1) 
 
+g.selectAll('.arc__')
+.transition().delay(function(d, i) { return (5-i)*100; }).duration(100)
+.attr('opacity', 0)
+
+;
+
+g.selectAll('.dc_poly__')
+.transition()
+  .duration(0)
+  .attr('opacity', 0);
+g.selectAll('.dc_lbls__')
+.transition()
+  .duration(0)
+  .attr('opacity', 0);
+
 
 }
+
+//////////////////////////////////////
+
+function showDonut3(){
+  
+
+ 
+var height = 520;
+var width = 600;
+var radius = Math.min(width, height) / 2;
+
+
+var arc_ = d3.arc()
+  .innerRadius(radius * 0.4)         // This is the size of the donut hole
+  .outerRadius(radius * 0.7);
+
+var tr_dur = 700;
+g.selectAll('.arc__')
+.transition().delay(function(d, i) { return i*tr_dur+100; }).duration(tr_dur)
+.attrTween('d', function(d) {
+var i_ = d3.interpolate(d.startAngle+0.1, d.endAngle);
+     return function(t) {
+         d.endAngle = i_(t);
+       return arc_(d);
+     }
+})
+.attr('opacity', 1)
+;
+g.selectAll('.dc_poly__')
+.transition().delay(function(d, i) { return i*tr_dur; }).duration(tr_dur)
+.attr('opacity', 1);
+
+g.selectAll('.dc_lbls__')
+.transition().delay(function(d, i) { return i*tr_dur; }).duration(tr_dur)
+.attr('opacity', 1);
+
+
+
+var height = 520;
+var y = d3.scaleLinear()
+.domain([0, 40])
+.range([ height, 0 ]);
+g.selectAll('.allgrpbarswagegid').attr('opacity', 1)
+.selectAll('.grpbarwagegid').selectAll('rect')
+.transition()
+.duration(800)
+.attr("y", function(d){
+  return y(0)})
+  .attr("height", 0)
+
+  g.selectAll('.yaxisgrpbrwagegid')
+  .transition()
+  .duration(300)
+.attr('opacity', 0) 
+g.selectAll('.xaxisgrpbrwagegid')
+.transition()
+.duration(300)
+.attr('opacity', 0) 
+
+var height = 520;
+var y = d3.scaleLinear()
+.domain([0, 40])
+.range([ height, 0 ]);
+g.selectAll('.allgrpbarsedu').attr('opacity', 1)
+.selectAll('.grpbaredu').selectAll('rect')
+.transition()
+.duration(800)
+.attr("y", function(d){
+  return y(0)})
+  .attr("height", 0)
+
+  g.selectAll('.yaxisgrpbredu')
+  .transition()
+  .duration(300)
+.attr('opacity', 0) 
+g.selectAll('.xaxisgrpbredu')
+.transition()
+.duration(300)
+.attr('opacity', 0) 
+
+  
+}
+
+////////////////////////////////
+function showGroupHistPart4(){
+
+  g.selectAll('.arc__')
+  .transition().delay(function(d, i) { return (5-i)*100; }).duration(100)
+  .attr('opacity', 0)
+  
+  ;
+
+  g.selectAll('.dc_poly__')
+  .transition()
+    .duration(0)
+    .attr('opacity', 0);
+  g.selectAll('.dc_lbls__')
+  .transition()
+    .duration(0)
+    .attr('opacity', 0);
+var height = 520;
+var y = d3.scaleLinear()
+.domain([0, 55])
+.range([ height, 0 ]);
+
+// g.selectAll('.allgrpbars').attr('opacity', 1)
+
+g.selectAll('.allgrpbarsedu').attr('opacity', 1)
+.selectAll('.grpbaredu').selectAll('rect')
+.transition()
+.duration(800)
+.attr("y", function(d) { return y(d.value); })
+.attr("height", function(d) { return height - y(d.value); });
+ 
+
+
+
+g.selectAll('.yaxisgrpbredu')
+  .transition()
+  .duration(300)
+.attr('opacity', 1) 
+g.selectAll('.xaxisgrpbredu')
+.transition()
+.duration(300)
+.attr('opacity', 1) 
+
+
+
+
+    
+  }
+  ///////////////////////////////////
+
+
  
 
 
