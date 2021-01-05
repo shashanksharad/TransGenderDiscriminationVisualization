@@ -1117,7 +1117,104 @@ d3.csv("https://raw.githubusercontent.com/shashanksharad/TransgenderDiscriminati
 
       ////////////////////////////////////////////////////////////////////////////////////////////////
 
- 
+      var data4 = [ {name: "Gay/Lesbian/Same Gender", value: 23},
+      {name: "Bisexual", value:  25},
+      {name: "Queer", value:  23},
+      {name: "Heterosexual", value:  23},
+      {name: "Asexual", value:  4},
+      {name: "Other", value:  2},
+      
+       ];
+      
+      // var margin = {top: 20, right: 20, bottom: 20, left: 20};
+      // 	width = 400 - margin.left - margin.right;
+      // 	height = width - margin.top - margin.bottom;
+      
+      
+      
+      // var g = d3.select("g")
+      // .attr("transform", "translate(" + ((width/2)+margin.left) + "," + ((height/2)+margin.top) + ")");
+      
+      console.log(width);
+      var radius = Math.min(width, height) / 2;
+      
+      var color_donut = d3.scaleOrdinal().range(d3.schemeCategory20);
+      
+      var arc = d3.arc()
+      .innerRadius(radius * 0.4)         // This is the size of the donut hole
+      .outerRadius(radius * 0.7);
+      
+      console.log(arc.centroid)   
+      var outerArc = d3.arc()
+      .innerRadius(radius * 0.75)
+      .outerRadius(radius * 0.75);
+      
+      var pie = d3.pie()
+      .sort(null)
+      .value(function(d) { return d.value; });
+      
+      
+      var arcs = g.selectAll(".arc___")
+      .data(pie(data4));
+      
+      var arcse = arcs.enter().append("path")
+      .attr("class", "arc___");
+      
+      arcs = arcs.merge(arcse)
+      .style("fill", function(d) { return color_donut(d.data.name); })
+      .attr("stroke", "white")
+      .attr("stroke-width", 6)
+      .attr('opacity', 0);
+      arcse.attr("transform", "translate(" + ((width/2)) + "," + ((height/2)) + ")");
+      
+      
+      
+      // Add the polylines between chart and labels:
+      var dc_polylines = g.selectAll('.dc_poly___').data(pie(data4));
+      
+      var dc_polylinese = dc_polylines.enter()
+      .append('polyline')
+      .attr('class','dc_poly___');
+      
+      dc_polylines = dc_polylines.merge(dc_polylinese)
+      .attr("stroke", "black")
+      .style("fill", "none")
+      .attr("stroke-width", 1)
+      .attr('points', function(d) {
+      var posA = arc.centroid(d) // line insertion in the slice
+      var posB = outerArc.centroid(d) // line break: we use the other arc generator that has been built only for that
+      var posC = outerArc.centroid(d); // Label position = almost the same as posB
+      var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2 ;// we need the angle to see if the X position will be at the extreme right or extreme left
+      console.log(midangle)
+      posC[0] = radius * 0.75 * (midangle < Math.PI ? 1 : -1); // multiply by 1 or -1 to put it on the right or on the left
+      return [posA, posB, posC]
+      })
+      .attr('opacity', 0);
+      dc_polylinese.attr("transform", "translate(" + ((width/2)) + "," + ((height/2)) + ")");
+      
+      // Add the polylines between chart and labels:
+      var dc_labels = g.selectAll('.dc_lbls___').data(pie(data4));
+      
+      var dc_labelse = dc_labels.enter()
+      .append('text')
+      .text( function(d) { console.log(d.data.name) ; return d.data.name } )
+      .attr('class', 'dc_lbls___');
+      
+      // dc_labelse.attr("transform", "translate(" + ((width/2)) + "," + ((height/2)) + ")");
+      
+      dc_labels = dc_labels.merge(dc_labelse)
+      .attr('transform', function(d) {
+        var pos = outerArc.centroid(d);
+        var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
+        pos[0] = radius * 0.79 * (midangle < Math.PI ? 1 : -1)+width/2;
+        pos[1] = pos[1]+height/2;
+        return 'translate(' + pos + ')';
+      })
+      .style('text-anchor', function(d) {
+        var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
+        return (midangle < Math.PI ? 'start' : 'end')
+      })
+      .attr('opacity', 0); 
 
 
   };
@@ -1146,6 +1243,7 @@ d3.csv("https://raw.githubusercontent.com/shashanksharad/TransgenderDiscriminati
     activateFunctions[8] = showGroupHistPart3;
     activateFunctions[9] = showDonut3;
     activateFunctions[10] = showGroupHistPart4;
+    activateFunctions[11] = showDonut4;
     // activateFunctions[8] = showHistPart;
     // activateFunctions[9] = showHistAll;
     // activateFunctions[10] = showCough;
@@ -1157,7 +1255,7 @@ d3.csv("https://raw.githubusercontent.com/shashanksharad/TransgenderDiscriminati
     // Most sections do not need to be updated
     // for all scrolling and so are set to
     // no-op functions.
-    for (var i = 0; i < 11; i++) {
+    for (var i = 0; i < 12; i++) {
       updateFunctions[i] = function () {};
     }
     // updateFunctions[7] = updateCough;
@@ -2027,6 +2125,7 @@ function showGroupHistPart4(){
   .transition()
     .duration(0)
     .attr('opacity', 0);
+
 var height = 520;
 var y = d3.scaleLinear()
 .domain([0, 45])
@@ -2053,6 +2152,20 @@ g.selectAll('.xaxisgrpbredu')
 .duration(300)
 .attr('opacity', 1) 
 
+g.selectAll('.arc___')
+.transition().delay(function(d, i) { return (5-i)*100; }).duration(100)
+.attr('opacity', 0)
+
+;
+
+g.selectAll('.dc_poly___')
+.transition()
+  .duration(0)
+  .attr('opacity', 0);
+g.selectAll('.dc_lbls___')
+.transition()
+  .duration(0)
+  .attr('opacity', 0);
 
 
 
@@ -2060,7 +2173,64 @@ g.selectAll('.xaxisgrpbredu')
   }
   ///////////////////////////////////
 
+  function showDonut4(){
+  
 
+ 
+    var height = 520;
+    var width = 600;
+    var radius = Math.min(width, height) / 2;
+    
+    
+    var arc_ = d3.arc()
+      .innerRadius(radius * 0.4)         // This is the size of the donut hole
+      .outerRadius(radius * 0.7);
+    
+    var tr_dur = 700;
+    g.selectAll('.arc___')
+    .transition().delay(function(d, i) { return i*tr_dur+100; }).duration(tr_dur)
+    .attrTween('d', function(d) {
+    var i_ = d3.interpolate(d.startAngle+0.1, d.endAngle);
+         return function(t) {
+             d.endAngle = i_(t);
+           return arc_(d);
+         }
+    })
+    .attr('opacity', 1)
+    ;
+    g.selectAll('.dc_poly___')
+    .transition().delay(function(d, i) { return i*tr_dur; }).duration(tr_dur)
+    .attr('opacity', 1);
+    
+    g.selectAll('.dc_lbls___')
+    .transition().delay(function(d, i) { return i*tr_dur; }).duration(tr_dur)
+    .attr('opacity', 1);
+    
+    
+    
+    var height = 520;
+var y = d3.scaleLinear()
+.domain([0, 45])
+.range([ height, 0 ]);
+g.selectAll('.allgrpbarsedu').attr('opacity', 1)
+.selectAll('.grpbaredu').selectAll('rect')
+.transition()
+.duration(800)
+.attr("y", function(d){
+  return y(0)})
+  .attr("height", 0)
+
+  g.selectAll('.yaxisgrpbredu')
+  .transition()
+  .duration(300)
+.attr('opacity', 0) 
+g.selectAll('.xaxisgrpbredu')
+.transition()
+.duration(300)
+.attr('opacity', 0) 
+    
+      
+    }
  
 
 
