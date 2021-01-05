@@ -1988,7 +1988,7 @@ g.selectAll('.xaxisgrpbrwagegid')
 
 var height = 520;
 var y = d3.scaleLinear()
-.domain([0, 40])
+.domain([0, 45])
 .range([ height, 0 ]);
 g.selectAll('.allgrpbarsedu').attr('opacity', 1)
 .selectAll('.grpbaredu').selectAll('rect')
@@ -2029,7 +2029,7 @@ function showGroupHistPart4(){
     .attr('opacity', 0);
 var height = 520;
 var y = d3.scaleLinear()
-.domain([0, 55])
+.domain([0, 45])
 .range([ height, 0 ]);
 
 // g.selectAll('.allgrpbars').attr('opacity', 1)
