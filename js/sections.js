@@ -63,12 +63,12 @@ var y = d3.scaleLinear()
     .range([height, 0]);
 
 
-var xAxisgrpbar = d3.axisBottom(x0)
+// var xAxisgrpbar = d3.axisBottom(x0)
 
 
 
 
-var yAxisgrpbar = d3.axisLeft(y);
+// var yAxisgrpbar = d3.axisLeft(y);
 
   // The histogram display shows the
   // first 30 minutes of data
@@ -100,9 +100,9 @@ var yAxisgrpbar = d3.axisLeft(y);
     .scale(xBarScale);
 
   // @v4 using new axis name
-  var xAxisHist = d3.axisBottom()
-    .scale(xHistScale)
-    .tickFormat(function (d) { return d + ' min'; });
+  // var xAxisHist = d3.axisBottom()
+  //   .scale(xHistScale)
+  //   .tickFormat(function (d) { return d + ' min'; });
 
   // When scrolling to a new section
   // the activation function for that
@@ -360,19 +360,7 @@ function bubbleChart() {
     return myNodes;
   }
 
-  /*
-   * Main entry point to the bubble chart. This function is returned
-   * by the parent closure. It prepares the rawData for visualization
-   * and adds an svg element to the provided selector and starts the
-   * visualization creation process.
-   *
-   * selector is expected to be a DOM element or CSS selector that
-   * points to the parent element of the bubble chart. Inside this
-   * element, the code will add the SVG continer for the visualization.
-   *
-   * rawData is expected to be an array of data objects as provided by
-   * a d3 loading function like d3.csv.
-   */
+  
   
   var chart = function chart(selector, rawData) {
     // convert raw data into nodes data
@@ -452,6 +440,86 @@ function display(error, data) {
 // Load the data.
 // d3.csv('https://raw.githubusercontent.com/vlandham/bubble_chart_v4/master/data/gates_money.csv', display);
 d3.csv('https://raw.githubusercontent.com/shashanksharad/TransgenderDiscrimination/main/TransDiscriminationData.csv', display)
+
+
+///////////////////////////////////////////////////////////////////////////////
+
+
+
+// Parse the Data
+d3.csv("https://raw.githubusercontent.com/shashanksharad/TransgenderDiscrimination/main/wage_diff.csv", function(data) {
+
+  // List of subgroups = header of the csv files = soil condition here
+  var subgroups = data.columns.slice(1)
+
+  // List of groups = species here = value of the first column called group -> I show them on the X axis
+  var groups = d3.map(data, function(d){return(d.group)}).keys()
+// console.log(groups)
+  // Add X axis
+  var x = d3.scaleBand()
+      .domain(groups)
+      .range([0, width])
+      .padding([0.2])
+  g.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .attr('class', 'xaxisgrpbr')
+    .attr('opacity', 0)
+    .call(d3.axisBottom(x).tickSize(0));
+
+  // Add Y axis
+  var y = d3.scaleLinear()
+    .domain([0, 40])
+    .range([ height, 0 ]);
+  g.append("g")
+  .attr('class', 'yaxisgrpbr')
+  .attr('opacity', 0)
+    .call(d3.axisLeft(y));
+  // 
+
+  // Another scale for subgroup position?
+  var xSubgroup = d3.scaleBand()
+    .domain(subgroups)
+    .range([0, x.bandwidth()])
+    .padding([0.05])
+
+  // color palette = one color per subgroup
+  var color = d3.scaleOrdinal()
+    .domain(subgroups)
+    .range(['#0065a2','#00b0ba'])
+
+
+
+
+
+  // Show the bars
+ 
+    // Enter in data = loop group per group
+    g.append("g")
+    .attr('class', 'allgrpbars')
+    .attr('opacity', 0)
+    .selectAll("g")
+    // Enter in data = loop group per group
+    .data(data)
+    .enter()
+    .append("g")
+    .attr('class', 'grpbar')
+    
+      .attr("transform", function(d) { return "translate(" + x(d.group) + ",0)"; })
+    .selectAll("rect")
+    .data(function(d) { return subgroups.map(function(key) { return {key: key, value: d[key]}; }); })
+    .enter().append("rect")
+      .attr("x", function(d) { return xSubgroup(d.key); })
+       .attr("y", function(d){
+        return y(0)})
+        .attr("height", 0)
+        .attr("width", xSubgroup.bandwidth())
+        .attr("fill", function(d) { return color(d.key); });
+        
+      
+
+
+})
+
 
 
 // ////////////////////////////////////////////////////////////////////////////
@@ -709,136 +777,11 @@ dc_labels = dc_labels.merge(dc_labelse)
 
 // /////////////////////////////////////////////////
 
-// var color = d3.scaleOrdinal()
-//     .range(["#2c3e50","#95a5a6"]);
-
-//   // var svg = g.append("svg")
-//   //   .append("g")
-
-// // var g = d3.select('g')
-// //     .attr("width", width + margin.left + margin.right)
-// //     .attr("height", height + margin.top + margin.bottom)
-
-// d3.json("https://raw.githubusercontent.com/shashanksharad/TransgenderDiscrimination/main/wage_group_barchart.json", function(error, data) {
-//     // console.log(data);
-
-//   var categoriesNames = data.map(function(d) { return d.categorie; });
-//   var rateNames = data[0].values.map(function(d) { return d.rate; });
-
-//   x0.domain(categoriesNames);
-//   x1.rangeRound([0, x0.bandwidth()]).domain(rateNames);
-//   y.domain([0, d3.max(data, function(categorie) { return d3.max(categorie.values, function(d) { return d.value; }); })]);
-
-
-
-
-
-//   g.selectAll('xaxisgrpbar')
-//       .append('xaxisgrpbar')
-//       .attr("class", "xaxisgrpbar")
-//       .attr("transform", "translate(0," + height + ")")
-//       .call(xAxisgrpbar);
-
-//   g.selectAll('yaxisgrpbar')
-//       .append('yaxisgrpbar')
-//       .attr("class", "yaxisgrpbar")
-//       .style('opacity','0')
-//       .call(yAxisgrpbar)
-//       .append("text")
-//       .attr("transform", "rotate(-90)")
-//       .attr("y", 6)
-//       .attr("dy", ".71em")
-//       .style("text-anchor", "end")
-//       .style('font-weight','bold')
-//       .text("Value");
-
-
-
- 
-
-//   g.select('.yaxisgrpbar').transition().duration(500).delay(1300).style('opacity','1');
-
-//   var slice = g.selectAll("grpbar")
-//       .data(data)
-//       .enter().append("rect")
-//       .attr("class", "grpbar")
-//       .attr("transform",function(d) { return "translate(" + x0(d.categorie) + ",0)"; });
-
-//   slice.selectAll("grpbar")
-//       .data(function(d) { return d.values; })
-//       .enter().append("rect")
-//       .attr("width", x1.bandwidth())
-//       .attr("x", function(d) { return x1(d.rate); })
-//       .style("fill", function(d) { return color(d.rate) })
-//       .attr('opacity', 1)
-//       .attr("y", function(d) { return 10; })
-//       .attr("height", function(d) { return height-10; })
-//       .on("mouseover", function(d) {
-//           d3.select(this).style("fill", d3.rgb(color(d.rate)).darker(2));
-//       })
-//       .on("mouseout", function(d) {
-//           d3.select(this).style("fill", color(d.rate));
-//       });
-
-//   slice.selectAll("grpbar")
-//       .transition()
-//       .delay(function (d) {return Math.random()*1000;})
-//       .duration(1000)
-//       .attr("y", function(d) { return 10; })
-//       .attr("height", function(d) { return height - 10; });
-
-//   //Legend
-//   var legend = svg.selectAll(".legend")
-//       .data(data[0].values.map(function(d) { return d.rate; }).reverse())
-//   .enter().append("g")
-//       .attr("class", "legend")
-//       .attr("transform", function(d,i) { return "translate(0," + i * 20 + ")"; })
-//       .style("opacity",1);
-
-//   legend.append("rect")
-//       .attr("x", width - 18)
-//       .attr("width", 18)
-//       .attr("height", 18)
-//       .style("fill", function(d) { return color(d); });
-
-//   legend.append("text")
-//       .attr("x", width - 24)
-//       .attr("y", 9)
-//       .attr("dy", ".35em")
-//       .style("text-anchor", "end")
-//       .text(function(d) {return d; });
-
-//   legend.transition().duration(500).delay(function(d,i){ return 1300 + 100 * i; }).style("opacity","1");
-
-// });
-
-
-
-
 
 
       ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // histogram
-    // @v4 Using .merge here to ensure
-    // new and old data have same attrs applied
-    // var hist = g.selectAll('.hist').data(histData);
-    // var histE = hist.enter().append('rect')
-    //   .attr('class', 'hist');
-    // hist = hist.merge(histE).attr('x', function (d) { return xHistScale(d.x0); })
-    //   .attr('y', height)
-    //   .attr('height', 0)
-    //   .attr('width', xHistScale(histData[0].x1) - xHistScale(histData[0].x0) - 1)
-    //   .attr('fill', barColors[0])
-    //   .attr('opacity', 0);
-
-    // // cough title
-    // g.append('text')
-    //   .attr('class', 'sub-title cough cough-title')
-    //   .attr('x', width / 2)
-    //   .attr('y', 60)
-    //   .text('cough')
-    //   .attr('opacity', 0);
+ 
 
 
   };
@@ -863,10 +806,11 @@ dc_labels = dc_labels.merge(dc_labelse)
     activateFunctions[5] = showDonut1;
     activateFunctions[6] = showDonut2;
     activateFunctions[7] = showGroupHistPart;
-    activateFunctions[8] = showHistPart;
-    activateFunctions[9] = showHistAll;
-    activateFunctions[10] = showCough;
-    activateFunctions[11] = showHistAll;
+    activateFunctions[8] = showGroupHistPart2;
+    // activateFunctions[8] = showHistPart;
+    // activateFunctions[9] = showHistAll;
+    // activateFunctions[10] = showCough;
+    // activateFunctions[11] = showHistAll;
 
     // updateFunctions are called while
     // in a particular section to update
@@ -874,10 +818,10 @@ dc_labels = dc_labels.merge(dc_labelse)
     // Most sections do not need to be updated
     // for all scrolling and so are set to
     // no-op functions.
-    for (var i = 0; i < 12; i++) {
+    for (var i = 0; i < 9; i++) {
       updateFunctions[i] = function () {};
     }
-    updateFunctions[7] = updateCough;
+    // updateFunctions[7] = updateCough;
   };
 
   function showTitle() {
@@ -1294,6 +1238,7 @@ g.selectAll('.bubble')
     .duration(600)
     .attr('width', 0);
 
+  var height = 520;
   var radius = Math.min(width, height) / 2;
 
   
@@ -1360,13 +1305,15 @@ g.selectAll('.bubble')
         .attr('opacity', 0);
 
  
-
+var height = 520;
+var width = 600;
 var radius = Math.min(width, height) / 2;
 
 
 var arc = d3.arc()
   .innerRadius(radius * 0.4)         // This is the size of the donut hole
   .outerRadius(radius * 0.7);
+
 var tr_dur = 700;
 g.selectAll('.arc_')
 .transition().delay(function(d, i) { return i*tr_dur+100; }).duration(tr_dur)
@@ -1382,11 +1329,33 @@ var i = d3.interpolate(d.startAngle+0.1, d.endAngle);
 g.selectAll('.dc_poly_')
 .transition().delay(function(d, i) { return i*tr_dur; }).duration(tr_dur)
 .attr('opacity', 1);
+
 g.selectAll('.dc_lbls_')
 .transition().delay(function(d, i) { return i*tr_dur; }).duration(tr_dur)
 .attr('opacity', 1);
 
 
+
+var height = 520;
+var y = d3.scaleLinear()
+.domain([0, 40])
+.range([ height, 0 ]);
+g.selectAll('.allgrpbars').attr('opacity', 1)
+.selectAll('.grpbar').selectAll('rect')
+.transition()
+.duration(800)
+.attr("y", function(d){
+  return y(0)})
+  .attr("height", 0)
+
+  g.selectAll('.yaxisgrpbr')
+  .transition()
+  .duration(300)
+.attr('opacity', 0) 
+g.selectAll('.xaxisgrpbr')
+.transition()
+.duration(300)
+.attr('opacity', 0) 
 
   
 }
@@ -1395,120 +1364,80 @@ g.selectAll('.dc_lbls_')
 
 
 //////////////////////////////////////////////////////////////////////
-  function showGroupHistPart(){
+function showGroupHistPart(){
 
-    // g.selectAll('.arc_')
-    // .attr('opacity', 0)
+    g.selectAll('.arc_')
+      .transition().delay(function(d, i) { return (5-i)*100; }).duration(100)
+      .attr('opacity', 0)
+      
+      ;
+  
+  g.selectAll('.dc_poly_')
+  .transition()
+    .duration(0)
+    .attr('opacity', 0);
+  g.selectAll('.dc_lbls_')
+  .transition()
+    .duration(0)
+    .attr('opacity', 0);
+var height = 520;
+var y = d3.scaleLinear()
+.domain([0, 40])
+.range([ height, 0 ]);
+
+// g.selectAll('.allgrpbars').attr('opacity', 1)
+
+g.selectAll('.allgrpbars').attr('opacity', 1)
+.selectAll('.grpbar').selectAll('rect')
+.transition()
+.duration(800)
+.attr("y", function(d) { return y(d.value); })
+.attr("height", function(d) { return height - y(d.value); });
+ 
+
+g.selectAll('.yaxisgrpbr')
+  .transition()
+  .duration(300)
+.attr('opacity', 1) 
+g.selectAll('.xaxisgrpbr')
+.transition()
+.duration(300)
+.attr('opacity', 1) 
+
+
     
-    // g.selectAll('.dc_poly_')
-    // .transition()
-    //   .duration(0)
-    //   .attr('opacity', 0);
-    // g.selectAll('.dc_lbls_')
-    // .transition()
-    //   .duration(0)
-    //   .attr('opacity', 0);
+  }
 
-    
-    // showAxis(xAxisgrpbar);
-    // showAxis(yAxisgrpbar);
-    
-    // g.selectAll('slice')
-    // .transition()
-    // .duration(600)
-    // .attr('opacity', 1)
-
-    // g.selectAll("grpbar")
-    // .selectAll('rect')
-    //   .attr('opacity', 1);
-
-    //   g.selectAll("rect")
-    //   .transition()
-    //     .delay(function (d) {return Math.random()*1000;})
-    //     .duration(1000)
-    //     .attr("y", function(d) { return y(d.value); })
-    //     .attr("height", function(d) { return height - y(d.value); })
-    //     .attr('opacity', 1);
+  function showGroupHistPart2(){
+    var height = 520;
+var y = d3.scaleLinear()
+.domain([0, 40])
+.range([ height, 0 ]);
+g.selectAll('.allgrpbars').attr('opacity', 1)
+.selectAll('.grpbar').selectAll('rect')
+.transition()
+.duration(800)
+.attr("y", function(d){
+  return y(0)})
+  .attr("height", 0)
 
 
-    
+  g.selectAll('.yaxisgrpbr')
+  .transition()
+  .duration(300)
+.attr('opacity', 0) 
+g.selectAll('.xaxisgrpbr')
+.transition()
+.duration(300)
+.attr('opacity', 0) 
   }
 //////////////////////////////////////////////////////////////////////
 
-  function showHistPart() {
-
-    hideAxis(xAxisgrpbar);
-hideAxis(yAxisgrpbar);
-
-g.selectAll("rect")
-      .transition()
-      .delay(function (d) {return Math.random()*1000;})
-      .duration(1000)
-      .attr("y", function(d) { return y(d.value); })
-      .attr('opacity', 0);
-
-    g.selectAll('rect')
-      .attr('opacity', 0)
-    // switch the axis to histogram one
-    showAxis(xAxisHist);
+ 
 
 
 
-    // here we only show a bar if
-    // it is before the 15 minute mark
-    g.selectAll('.hist')
-      .transition()
-      .duration(600)
-      .attr('y', function (d) { return (d.x0 < 15) ? yHistScale(d.length) : height; })
-      .attr('height', function (d) { return (d.x0 < 15) ? height - yHistScale(d.length) : 0; })
-      .style('opacity', function (d) { return (d.x0 < 15) ? 1.0 : 1e-6; });
-  }
-
-
-  function showHistAll() {
-    // ensure the axis to histogram one
-    showAxis(xAxisHist);
-
-    g.selectAll('.cough')
-      .transition()
-      .duration(0)
-      .attr('opacity', 0);
-
-    // named transition to ensure
-    // color change is not clobbered
-    g.selectAll('.hist')
-      .transition('color')
-      .duration(500)
-      .style('fill', '#008080');
-
-    g.selectAll('.hist')
-      .transition()
-      .duration(1200)
-      .attr('y', function (d) { return yHistScale(d.length); })
-      .attr('height', function (d) { return height - yHistScale(d.length); })
-      .style('opacity', 1.0);
-  }
-
-  /**
-   * showCough
-   *
-   * hides: nothing
-   * (previous and next sections are histograms
-   *  so we don't have to hide much here)
-   * shows: histogram
-   *
-   */
-  function showCough() {
-    // ensure the axis to histogram one
-    showAxis(xAxisHist);
-
-    g.selectAll('.hist')
-      .transition()
-      .duration(600)
-      .attr('y', function (d) { return yHistScale(d.length); })
-      .attr('height', function (d) { return height - yHistScale(d.length); })
-      .style('opacity', 1.0);
-  }
+ 
 
   /**
    * showAxis - helper function to
