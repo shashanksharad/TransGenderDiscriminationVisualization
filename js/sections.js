@@ -252,13 +252,15 @@ var countries_e = countries.enter()
       .attr('class', 'title count-title2 highlight')
       .attr('x', width / 2)
       .attr('y', height / 3)
-      .text('Transgender2');
+      .text('70%')
+      .style("font-size", "100px");
 
     g.append('text')
       .attr('class', 'sub-title count-title2')
       .attr('x', width / 2)
       .attr('y', (height / 3) + (height / 5))
-      .text('Discrimination2');
+      .text('respondents support gender affirming surgery for transgenders')
+      .style("font-size", "22px");
 
     g.selectAll('.count-title2')
       .attr('opacity', 0);
@@ -447,7 +449,7 @@ d3.csv('https://raw.githubusercontent.com/shashanksharad/TransgenderDiscriminati
 
 
 // Parse the Data
-d3.csv("https://raw.githubusercontent.com/shashanksharad/TransgenderDiscrimination/main/wage_diff.csv", function(data) {
+d3.csv("https://raw.githubusercontent.com/shashanksharad/TransgenderDiscrimination/main/age_distr.csv", function(data) {
 
   // List of subgroups = header of the csv files = soil condition here
   var subgroups = data.columns.slice(1)
@@ -468,7 +470,7 @@ d3.csv("https://raw.githubusercontent.com/shashanksharad/TransgenderDiscriminati
 
   // Add Y axis
   var y = d3.scaleLinear()
-    .domain([0, 40])
+    .domain([0, 55])
     .range([ height, 0 ]);
   g.append("g")
   .attr('class', 'yaxisgrpbr')
@@ -524,6 +526,156 @@ d3.csv("https://raw.githubusercontent.com/shashanksharad/TransgenderDiscriminati
 
 // ////////////////////////////////////////////////////////////////////////////
 
+// Parse the Data
+d3.csv("https://raw.githubusercontent.com/shashanksharad/TransgenderDiscrimination/main/wage_diff.csv", function(data) {
+
+  // List of subgroups = header of the csv files = soil condition here
+  var subgroups = data.columns.slice(1)
+
+  // List of groups = species here = value of the first column called group -> I show them on the X axis
+  var groups = d3.map(data, function(d){return(d.group)}).keys()
+// console.log(groups)
+  // Add X axis
+  var x = d3.scaleBand()
+      .domain(groups)
+      .range([0, width])
+      .padding([0.2])
+  g.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .attr('class', 'xaxisgrpbrwage')
+    .attr('opacity', 0)
+    .call(d3.axisBottom(x).tickSize(0));
+
+  // Add Y axis
+  var y = d3.scaleLinear()
+    .domain([0, 40])
+    .range([ height, 0 ]);
+  g.append("g")
+  .attr('class', 'yaxisgrpbrwage')
+  .attr('opacity', 0)
+    .call(d3.axisLeft(y));
+  // 
+
+  // Another scale for subgroup position?
+  var xSubgroup = d3.scaleBand()
+    .domain(subgroups)
+    .range([0, x.bandwidth()])
+    .padding([0.05])
+
+  // color palette = one color per subgroup
+  var color = d3.scaleOrdinal()
+    .domain(subgroups)
+    .range(['#0065a2','#00b0ba'])
+
+
+
+
+
+  // Show the bars
+ 
+    // Enter in data = loop group per group
+    g.append("g")
+    .attr('class', 'allgrpbarswage')
+    .attr('opacity', 0)
+    .selectAll("g")
+    // Enter in data = loop group per group
+    .data(data)
+    .enter()
+    .append("g")
+    .attr('class', 'grpbarwage')
+    
+      .attr("transform", function(d) { return "translate(" + x(d.group) + ",0)"; })
+    .selectAll("rect")
+    .data(function(d) { return subgroups.map(function(key) { return {key: key, value: d[key]}; }); })
+    .enter().append("rect")
+      .attr("x", function(d) { return xSubgroup(d.key); })
+       .attr("y", function(d){
+        return y(0)})
+        .attr("height", 0)
+        .attr("width", xSubgroup.bandwidth())
+        .attr("fill", function(d) { return color(d.key); });
+        
+      
+
+
+})
+////////////////////////////////////////////////////////
+
+// Parse the Data
+d3.csv("https://raw.githubusercontent.com/shashanksharad/TransgenderDiscrimination/main/income_genderid.csv", function(data) {
+
+  // List of subgroups = header of the csv files = soil condition here
+  var subgroups = data.columns.slice(1)
+
+  // List of groups = species here = value of the first column called group -> I show them on the X axis
+  var groups = d3.map(data, function(d){return(d.group)}).keys()
+// console.log(groups)
+  // Add X axis
+  var x = d3.scaleBand()
+      .domain(groups)
+      .range([0, width])
+      .padding([0.2])
+  g.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .attr('class', 'xaxisgrpbrwagegid')
+    .attr('opacity', 0)
+    .call(d3.axisBottom(x).tickSize(0));
+
+  // Add Y axis
+  var y = d3.scaleLinear()
+    .domain([0, 40])
+    .range([ height, 0 ]);
+  g.append("g")
+  .attr('class', 'yaxisgrpbrwagegid')
+  .attr('opacity', 0)
+    .call(d3.axisLeft(y));
+  // 
+
+  // Another scale for subgroup position?
+  var xSubgroup = d3.scaleBand()
+    .domain(subgroups)
+    .range([0, x.bandwidth()])
+    .padding([0.05])
+
+  // color palette = one color per subgroup
+  var color = d3.scaleOrdinal()
+    .domain(subgroups)
+    .range(['#e74c3c', '#f4d03f','#0065a2','#00b0ba'])
+
+
+
+
+
+  // Show the bars
+ 
+    // Enter in data = loop group per group
+    g.append("g")
+    .attr('class', 'allgrpbarswagegid')
+    .attr('opacity', 0)
+    .selectAll("g")
+    // Enter in data = loop group per group
+    .data(data)
+    .enter()
+    .append("g")
+    .attr('class', 'grpbarwagegid')
+    
+      .attr("transform", function(d) { return "translate(" + x(d.group) + ",0)"; })
+    .selectAll("rect")
+    .data(function(d) { return subgroups.map(function(key) { return {key: key, value: d[key]}; }); })
+    .enter().append("rect")
+      .attr("x", function(d) { return xSubgroup(d.key); })
+       .attr("y", function(d){
+        return y(0)})
+        .attr("height", 0)
+        .attr("width", xSubgroup.bandwidth())
+        .attr("fill", function(d) { return color(d.key); });
+        
+      
+
+
+})
+////////////////////////////////////////////////////////
+
 dataset =[
   {
     name: "Lack of Legal Protection",
@@ -545,7 +697,7 @@ dataset =[
   },
    
   { name: "Violence", title: "Violence",color: "#E74C3C", value: 54 },
-  { name: "Lack of Health Coverage", title: "Lack of Health Coverage",color: "#F4D03F", value: 22 },
+  { name: "Poor Health Coverage", title: "Poor Health Coverage",color: "#F4D03F", value: 22 },
   { name: "Inaccurate ID Documents", title: "Inaccurate ID Documents",color: "#884EA0", value: 50 },
   
 ];
@@ -565,12 +717,12 @@ dataset =[
     barText.enter()
       .append('text')
       .attr('class', 'bar-text')
-      .text(function (d) { return d.title; })
+      .text(function (d) { return d.title+' ('+d.value+'%)'; })
       .attr('x', 0)
       .attr('dx', 5)
       .attr('y', function (d, i) { return yBarScale(i);})
       .attr('dy', yBarScale.bandwidth() / 2)
-      .style('font-size', '15px')
+      .style('font-size', '12px')
       .style('text-anchor', 'right')
       .attr('fill', 'white')
       .attr('opacity', 0);
@@ -578,11 +730,12 @@ dataset =[
 //       ////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-var data = [ {name: "one", value: 10},
-			{name: "two", value:  30},
-			{name: "three", value:  50},
-			{name: "four", value:  5},
-			{name: "five", value:  15} ];
+var data = [ {name: "White: 76%", value: 76},
+			{name: "Black: 5%", value:  5},
+			{name: "Asian: 2%", value:  2},
+			{name: "American Indian: 1%", value:  1},
+      {name: "latina/o: 5%", value:  5} ,
+    {name: "Multiracial: 11%", value: 11}];
 
 // var margin = {top: 20, right: 20, bottom: 20, left: 20};
 // 	width = 400 - margin.left - margin.right;
@@ -637,7 +790,7 @@ arcs = arcs.merge(arcse)
   dc_polylines = dc_polylines.merge(dc_polylinese)
     .attr("stroke", "black")
     .style("fill", "none")
-    .attr("stroke-width", 1)
+    .attr("stroke-width", 2)
     .attr('points', function(d) {
       var posA = arc.centroid(d) // line insertion in the slice
       var posB = outerArc.centroid(d) // line break: we use the other arc generator that has been built only for that
@@ -656,6 +809,7 @@ arcs = arcs.merge(arcse)
   var dc_labelse = dc_labels.enter()
   .append('text')
   .text( function(d) { console.log(d.data.name) ; return d.data.name } )
+  .style("font-size", "12px")
   .attr('class', 'dc_lbls');
 
   // dc_labelse.attr("transform", "translate(" + ((width/2)) + "," + ((height/2)) + ")");
@@ -804,9 +958,10 @@ dc_labels = dc_labels.merge(dc_labelse)
     // activateFunctions[5] = highlightGrid;
     activateFunctions[4] = showBar;
     activateFunctions[5] = showDonut1;
-    activateFunctions[6] = showDonut2;
-    activateFunctions[7] = showGroupHistPart;
-    activateFunctions[8] = showGroupHistPart2;
+    // activateFunctions[6] = showDonut2;
+    activateFunctions[6] = showGroupHistPart;
+    activateFunctions[7] = showGroupHistPart2;
+    activateFunctions[8] = showGroupHistPart3;
     // activateFunctions[8] = showHistPart;
     // activateFunctions[9] = showHistAll;
     // activateFunctions[10] = showCough;
@@ -1268,20 +1423,42 @@ g.selectAll('.bubble')
 
  
 
-  g.selectAll('.arc_')
-      .transition().delay(function(d, i) { return (5-i)*100; }).duration(100)
-      .attr('opacity', 0)
+  // g.selectAll('.arc_')
+  //     .transition().delay(function(d, i) { return (5-i)*100; }).duration(100)
+  //     .attr('opacity', 0)
       
-      ;
+  //     ;
   
-  g.selectAll('.dc_poly_')
+  // g.selectAll('.dc_poly_')
+  // .transition()
+  //   .duration(0)
+  //   .attr('opacity', 0);
+  // g.selectAll('.dc_lbls_')
+  // .transition()
+  //   .duration(0)
+  //   .attr('opacity', 0);
+
+  var height = 520;
+var y = d3.scaleLinear()
+.domain([0, 40])
+.range([ height, 0 ]);
+g.selectAll('.allgrpbars').attr('opacity', 1)
+.selectAll('.grpbar').selectAll('rect')
+.transition()
+.duration(800)
+.attr("y", function(d){
+  return y(0)})
+  .attr("height", 0)
+
+  g.selectAll('.yaxisgrpbr')
   .transition()
-    .duration(0)
-    .attr('opacity', 0);
-  g.selectAll('.dc_lbls_')
-  .transition()
-    .duration(0)
-    .attr('opacity', 0);
+  .duration(300)
+.attr('opacity', 0) 
+g.selectAll('.xaxisgrpbr')
+.transition()
+.duration(300)
+.attr('opacity', 0) 
+
   
 
     
@@ -1310,7 +1487,7 @@ var width = 600;
 var radius = Math.min(width, height) / 2;
 
 
-var arc = d3.arc()
+var arc_ = d3.arc()
   .innerRadius(radius * 0.4)         // This is the size of the donut hole
   .outerRadius(radius * 0.7);
 
@@ -1318,10 +1495,10 @@ var tr_dur = 700;
 g.selectAll('.arc_')
 .transition().delay(function(d, i) { return i*tr_dur+100; }).duration(tr_dur)
 .attrTween('d', function(d) {
-var i = d3.interpolate(d.startAngle+0.1, d.endAngle);
+var i_ = d3.interpolate(d.startAngle+0.1, d.endAngle);
      return function(t) {
-         d.endAngle = i(t);
-       return arc(d);
+         d.endAngle = i_(t);
+       return arc_(d);
      }
 })
 .attr('opacity', 1)
@@ -1366,23 +1543,23 @@ g.selectAll('.xaxisgrpbr')
 //////////////////////////////////////////////////////////////////////
 function showGroupHistPart(){
 
-    g.selectAll('.arc_')
-      .transition().delay(function(d, i) { return (5-i)*100; }).duration(100)
-      .attr('opacity', 0)
-      
-      ;
+  g.selectAll('.arc')
+  .transition().delay(function(d, i) { return (5-i)*100; }).duration(100)
+  .attr('opacity', 0)
   
-  g.selectAll('.dc_poly_')
+  ;
+
+  g.selectAll('.dc_poly')
   .transition()
     .duration(0)
     .attr('opacity', 0);
-  g.selectAll('.dc_lbls_')
+  g.selectAll('.dc_lbls')
   .transition()
     .duration(0)
     .attr('opacity', 0);
 var height = 520;
 var y = d3.scaleLinear()
-.domain([0, 40])
+.domain([0, 55])
 .range([ height, 0 ]);
 
 // g.selectAll('.allgrpbars').attr('opacity', 1)
@@ -1395,6 +1572,8 @@ g.selectAll('.allgrpbars').attr('opacity', 1)
 .attr("height", function(d) { return height - y(d.value); });
  
 
+
+
 g.selectAll('.yaxisgrpbr')
   .transition()
   .duration(300)
@@ -1403,6 +1582,27 @@ g.selectAll('.xaxisgrpbr')
 .transition()
 .duration(300)
 .attr('opacity', 1) 
+
+var height = 520;
+var y = d3.scaleLinear()
+.domain([0, 40])
+.range([ height, 0 ]);
+g.selectAll('.allgrpbarswage').attr('opacity', 1)
+.selectAll('.grpbarwage').selectAll('rect')
+.transition()
+.duration(800)
+.attr("y", function(d){
+  return y(0)})
+  .attr("height", 0)
+
+  g.selectAll('.yaxisgrpbrwage')
+  .transition()
+  .duration(300)
+.attr('opacity', 0) 
+g.selectAll('.xaxisgrpbrwage')
+.transition()
+.duration(300)
+.attr('opacity', 0) 
 
 
     
@@ -1430,9 +1630,104 @@ g.selectAll('.xaxisgrpbr')
 .transition()
 .duration(300)
 .attr('opacity', 0) 
+
+var height = 520;
+var y = d3.scaleLinear()
+.domain([0, 40])
+.range([ height, 0 ]);
+
+// g.selectAll('.allgrpbars').attr('opacity', 1)
+
+g.selectAll('.allgrpbarswage').attr('opacity', 1)
+.selectAll('.grpbarwage').selectAll('rect')
+.transition()
+.duration(800)
+.attr("y", function(d) { return y(d.value); })
+.attr("height", function(d) { return height - y(d.value); });
+ 
+
+g.selectAll('.yaxisgrpbrwage')
+  .transition()
+  .duration(300)
+.attr('opacity', 1) 
+g.selectAll('.xaxisgrpbrwage')
+.transition()
+.duration(300)
+.attr('opacity', 1) 
+
+var height = 520;
+var y = d3.scaleLinear()
+.domain([0, 40])
+.range([ height, 0 ]);
+g.selectAll('.allgrpbarswagegid').attr('opacity', 1)
+.selectAll('.grpbarwagegid').selectAll('rect')
+.transition()
+.duration(800)
+.attr("y", function(d){
+  return y(0)})
+  .attr("height", 0)
+
+  g.selectAll('.yaxisgrpbrwagegid')
+  .transition()
+  .duration(300)
+.attr('opacity', 0) 
+g.selectAll('.xaxisgrpbrwagegid')
+.transition()
+.duration(300)
+.attr('opacity', 0) 
+
+
   }
 //////////////////////////////////////////////////////////////////////
+function showGroupHistPart3(){
+  var height = 520;
+var y = d3.scaleLinear()
+.domain([0, 40])
+.range([ height, 0 ]);
+g.selectAll('.allgrpbarswage').attr('opacity', 1)
+.selectAll('.grpbarwage').selectAll('rect')
+.transition()
+.duration(800)
+.attr("y", function(d){
+return y(0)})
+.attr("height", 0)
 
+
+g.selectAll('.yaxisgrpbrwage')
+.transition()
+.duration(300)
+.attr('opacity', 0) 
+g.selectAll('.xaxisgrpbrwage')
+.transition()
+.duration(300)
+.attr('opacity', 0) 
+
+var height = 520;
+var y = d3.scaleLinear()
+.domain([0, 40])
+.range([ height, 0 ]);
+
+// g.selectAll('.allgrpbars').attr('opacity', 1)
+
+g.selectAll('.allgrpbarswagegid').attr('opacity', 1)
+.selectAll('.grpbarwagegid').selectAll('rect')
+.transition()
+.duration(800)
+.attr("y", function(d) { return y(d.value); })
+.attr("height", function(d) { return height - y(d.value); });
+
+
+g.selectAll('.yaxisgrpbrwagegid')
+.transition()
+.duration(300)
+.attr('opacity', 1) 
+g.selectAll('.xaxisgrpbrwagegid')
+.transition()
+.duration(300)
+.attr('opacity', 1) 
+
+
+}
  
 
 
