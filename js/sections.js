@@ -1682,7 +1682,7 @@ g.selectAll('.bubble')
   var arc = d3.arc()
     .innerRadius(radius * 0.4)         // This is the size of the donut hole
     .outerRadius(radius * 0.7);
-    var tr_dur = 700;
+    var tr_dur = 400;
   g.selectAll('.arc')
   .transition().delay(function(d, i) { return i*tr_dur; }).duration(tr_dur)
   .attrTween('d', function(d) {
@@ -1773,7 +1773,7 @@ var arc_ = d3.arc()
   .innerRadius(radius * 0.4)         // This is the size of the donut hole
   .outerRadius(radius * 0.7);
 
-var tr_dur = 700;
+var tr_dur = 400;
 g.selectAll('.arc_')
 .transition().delay(function(d, i) { return i*tr_dur+100; }).duration(tr_dur)
 .attrTween('d', function(d) {
@@ -2041,7 +2041,7 @@ var arc_ = d3.arc()
   .innerRadius(radius * 0.4)         // This is the size of the donut hole
   .outerRadius(radius * 0.7);
 
-var tr_dur = 700;
+var tr_dur = 400;
 g.selectAll('.arc__')
 .transition().delay(function(d, i) { return i*tr_dur+100; }).duration(tr_dur)
 .attrTween('d', function(d) {
@@ -2186,7 +2186,7 @@ g.selectAll('.dc_lbls___')
       .innerRadius(radius * 0.4)         // This is the size of the donut hole
       .outerRadius(radius * 0.7);
     
-    var tr_dur = 700;
+    var tr_dur = 400;
     g.selectAll('.arc___')
     .transition().delay(function(d, i) { return i*tr_dur+100; }).duration(tr_dur)
     .attrTween('d', function(d) {
